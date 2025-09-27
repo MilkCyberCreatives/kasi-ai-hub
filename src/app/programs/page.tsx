@@ -5,19 +5,24 @@ import BreadcrumbHero from '@/components/BreadcrumbHero';
 
 export const metadata = {
   title: 'Programs',
-  description: 'Cohorts, workshops, and hands-on sessions to make AI practical for your work.'
+  description: 'Cohorts, workshops, and hands-on sessions to make AI practical for your work.',
 };
 
+// Force static generation (no server code paths)
+export const dynamic = 'force-static';
+
 export default function ProgramsPage() {
+  // Breadcrumbs
   const breadcrumbLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://kasiaihub.com' },
-      { '@type': 'ListItem', position: 2, name: 'Programs', item: 'https://kasiaihub.com/programs' }
-    ]
+      { '@type': 'ListItem', position: 2, name: 'Programs', item: 'https://kasiaihub.com/programs' },
+    ],
   };
 
+  // FAQ (for rich result eligibility)
   const faqLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -28,8 +33,8 @@ export default function ProgramsPage() {
         acceptedAnswer: {
           '@type': 'Answer',
           text:
-            'Entrepreneurs, small teams, and community leaders who want practical AI workflows without heavy theory.'
-        }
+            'Entrepreneurs, small teams, and community leaders who want practical AI workflows without heavy theory.',
+        },
       },
       {
         '@type': 'Question',
@@ -37,8 +42,8 @@ export default function ProgramsPage() {
         acceptedAnswer: {
           '@type': 'Answer',
           text:
-            'No. We teach by example. If you can use email and WhatsApp, you can learn our workflows.'
-        }
+            'No. We teach by example. If you can use email and WhatsApp, you can learn our workflows.',
+        },
       },
       {
         '@type': 'Question',
@@ -46,10 +51,31 @@ export default function ProgramsPage() {
         acceptedAnswer: {
           '@type': 'Answer',
           text:
-            'We focus on accessible AI tools and show you how to integrate them into your daily tasks.'
-        }
-      }
-    ]
+            'We focus on accessible AI tools and show you how to integrate them into your daily tasks.',
+        },
+      },
+    ],
+  };
+
+  // Course schema (primary programme)
+  const courseLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: 'Practical AI Programme for Entrepreneurs',
+    description:
+      'Hands-on AI training for SMEs and teams in South Africa. Learn prompts, tools and workflows you can deploy immediately.',
+    provider: {
+      '@type': 'Organization',
+      name: 'Kasi AI Hub',
+      sameAs: 'https://kasiaihub.com',
+    },
+    hasCourseInstance: [
+      {
+        '@type': 'CourseInstance',
+        courseMode: 'inPerson, online',
+        location: { '@type': 'Place', name: 'Johannesburg, South Africa' },
+      },
+    ],
   };
 
   return (
@@ -57,6 +83,7 @@ export default function ProgramsPage() {
       {/* SEO JSON-LD */}
       <Script id="ld-breadcrumbs" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       <Script id="ld-faq" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
+      <Script id="ld-course" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseLd) }} />
 
       {/* Shared breadcrumb hero */}
       <BreadcrumbHero
@@ -70,15 +97,20 @@ export default function ProgramsPage() {
         <section className="grid gap-6 md:grid-cols-3">
           {/* Foundations */}
           <article className="glass rounded-2xl overflow-hidden">
-            <img src="/images/programs/foundations.jpg" alt="AI Foundations" className="h-44 w-full object-cover" />
+            <img
+              src="/images/programs/foundations.jpg"
+              alt="AI Foundations session cover"
+              className="h-44 w-full object-cover"
+              loading="lazy"
+            />
             <div className="p-6">
               <h2 className="text-white font-semibold text-xl">AI Foundations (3 Hours)</h2>
               <p className="mt-2 text-white/80">
-                Learn prompts, setup core tools, and build your first workflow (content, customer support, or reports).
+                Learn prompts, set up core tools, and build your first workflow (content, customer support, or reports).
               </p>
               <ul className="mt-3 list-disc pl-5 text-white/80 space-y-1">
                 <li>Role + Goal + Constraints prompting</li>
-                <li>Checklists & SOPs you can reuse</li>
+                <li>Checklists &amp; SOPs you can reuse</li>
                 <li>One working workflow you keep</li>
               </ul>
               <div className="mt-5 flex items-center justify-between">
@@ -92,7 +124,12 @@ export default function ProgramsPage() {
 
           {/* Team Workshop */}
           <article className="glass rounded-2xl overflow-hidden">
-            <img src="/images/programs/team.jpg" alt="Team Workshop" className="h-44 w-full object-cover" />
+            <img
+              src="/images/programs/team.jpg"
+              alt="Team Workshop session cover"
+              className="h-44 w-full object-cover"
+              loading="lazy"
+            />
             <div className="p-6">
               <h2 className="text-white font-semibold text-xl">Team Workshop (1 Day)</h2>
               <p className="mt-2 text-white/80">
@@ -100,8 +137,8 @@ export default function ProgramsPage() {
               </p>
               <ul className="mt-3 list-disc pl-5 text-white/80 space-y-1">
                 <li>Team prompt library tailored to you</li>
-                <li>Ready-to-use templates for ops & marketing</li>
-                <li>Setup checklist (security & privacy)</li>
+                <li>Ready-to-use templates for ops &amp; marketing</li>
+                <li>Setup checklist (security &amp; privacy)</li>
               </ul>
               <div className="mt-5 flex items-center justify-between">
                 <span className="text-white font-semibold">Custom</span>
@@ -114,7 +151,12 @@ export default function ProgramsPage() {
 
           {/* Monthly Clinic */}
           <article className="glass rounded-2xl overflow-hidden">
-            <img src="/images/programs/clinic.jpg" alt="Monthly AI Clinic" className="h-44 w-full object-cover" />
+            <img
+              src="/images/programs/clinic.jpg"
+              alt="Monthly AI Clinic cover"
+              className="h-44 w-full object-cover"
+              loading="lazy"
+            />
             <div className="p-6">
               <h2 className="text-white font-semibold text-xl">Monthly AI Clinic</h2>
               <p className="mt-2 text-white/80">
@@ -123,7 +165,7 @@ export default function ProgramsPage() {
               <ul className="mt-3 list-disc pl-5 text-white/80 space-y-1">
                 <li>Live troubleshooting</li>
                 <li>Templates you can reuse</li>
-                <li>Community Q&A</li>
+                <li>Community Q&amp;A</li>
               </ul>
               <div className="mt-5 flex items-center justify-between">
                 <span className="text-white font-semibold">Free</span>
@@ -135,7 +177,7 @@ export default function ProgramsPage() {
           </article>
         </section>
 
-        {/* FAQ */}
+        {/* FAQ (onsite) */}
         <section className="mt-12 grid gap-6 md:grid-cols-2">
           <div className="glass rounded-2xl p-6">
             <h3 className="text-white font-semibold text-lg">Who is this for?</h3>
