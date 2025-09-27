@@ -2,10 +2,12 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: 'class',
   content: [
-    './src/app/**/*.{ts,tsx,mdx}',
-    './src/components/**/*.{ts,tsx}',
-    './src/lib/**/*.{ts,tsx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/lib/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -18,9 +20,14 @@ const config: Config = {
           bg: 'var(--brand-bg)',
         },
       },
-      container: { center: true, padding: '1rem' },
+      container: {
+        center: true,
+        padding: '1rem',
+      },
     },
   },
+  // Keep empty unless you've installed extras like @tailwindcss/typography
   plugins: [],
 }
+
 export default config
