@@ -3,7 +3,7 @@ import 'server-only';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { getPostBySlug } from '@/src/data/posts'; // uses fs + gray-matter (server-only)
+import { getPostBySlug } from '@/data/posts'; // uses fs + gray-matter (server-only)
 
 type Props = { params: { slug: string } };
 
