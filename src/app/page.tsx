@@ -1,101 +1,87 @@
-import Image from "next/image";
+// src/app/page.tsx
+import Script from 'next/script'
 
-export default function Home() {
+import Hero from '@/components/Hero'
+import ValueStrip from '@/components/ValueStrip'
+import ServicesGrid from '@/components/ServicesGrid'
+import ProgramsTeaser from '@/components/ProgramsTeaser'
+import ProgramFinder from '@/components/ProgramFinder'
+import LeadCapture from '@/components/LeadCapture'
+import HowItWorks from '@/components/HowItWorks'
+import TrainingLocations from '@/components/TrainingLocations'
+import Testimonials from '@/components/Testimonials'
+import HomeFAQ from '@/components/HomeFAQ'
+import StatsStrip from '@/components/StatsStrip'
+import ApplyBanner from '@/components/ApplyBanner'
+import FinalCTA from '@/components/FinalCTA'
+
+export default function Page() {
+  const orgLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'kasiAIhub',
+    url: 'https://kasiaihub.com',
+    logo: 'https://kasiaihub.com/favicon.svg',
+    sameAs: []
+  }
+
+  const courseLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: 'AI Training South Africa – Learn and Build in 3 Hours',
+    provider: { '@type': 'Organization', name: 'kasiAIhub', sameAs: 'https://kasiaihub.com' },
+    description:
+      'Hands-on AI training for entrepreneurs and community businesses. Build working AI workflows in 3 hours.'
+  }
+
+  const faqLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Do I need a technical background?',
+        acceptedAnswer: { '@type': 'Answer', text: 'No. We teach by example. If you can use email/WhatsApp, you can learn our workflows.' }
+      },
+      {
+        '@type': 'Question',
+        name: 'What will I leave with?',
+        acceptedAnswer: { '@type': 'Answer', text: 'A working workflow tailored to your goal, plus templates and a prompt library to reuse.' }
+      },
+      {
+        '@type': 'Question',
+        name: 'Which AI tools do you use?',
+        acceptedAnswer: { '@type': 'Answer', text: 'We focus on accessible tools and show free/low-cost options. We also cover data privacy.' }
+      },
+      {
+        '@type': 'Question',
+        name: 'Can you train my team?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Yes. Our Team Workshop is designed for small/medium teams with industry-specific examples.' }
+      }
+    ]
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <main className="min-h-screen">
+      {/* SEO JSON-LD */}
+      <Script id="ld-org" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }} />
+      <Script id="ld-course" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseLd) }} />
+      <Script id="ld-faq-home" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+      {/* Sections */}
+      <Hero />
+      <ValueStrip />
+      <ServicesGrid />
+      <ProgramsTeaser />
+      <ProgramFinder />
+      <LeadCapture />
+      <HowItWorks />
+      <TrainingLocations />   {/* <-- new section */}
+      <Testimonials />
+      <HomeFAQ />
+      <StatsStrip />
+      <ApplyBanner />
+      <FinalCTA />
+    </main>
+  )
 }
