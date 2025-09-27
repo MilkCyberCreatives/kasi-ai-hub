@@ -2,30 +2,122 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Brand & Glass Theme Tokens ===== */
-:root{
-  --brand-primary:#10b981;         /* CTA green/teal */
-  --brand-secondary:#0f172a;       /* near-black */
-  --brand-accent:#34d399;
-  --brand-ink:#0b0f19;
-  --brand-bg:#0a0f1a;              /* dark page bg to suit glass theme */
-
-  /* Glass surfaces */
-  --glass-bg: rgba(255,255,255,0.08);
-  --glass-border: rgba(255,255,255,0.18);
+/* Root theme */
+:root {
+  --brand-primary: #6cf0a8;
 }
 
-html,body{ background: var(--brand-bg); color: #e5e7eb; }
-html{-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+/* Base */
+html, body {
+  @apply h-full bg-[#0a0f1a] text-white antialiased;
+}
 
-/* Reusable glass class */
+/* Improve mobile readability */
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Safe area padding for iOS notches */
+.safe-px {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+/* Section rhythm: tighter on mobile, roomier on desktop */
+.section {
+  @apply py-10 md:py-14;
+}
+
+/* Max width container */
+.container {
+  @apply mx-auto max-w-7xl safe-px;
+}
+
+/* Glass effect tuned for low-end mobiles (lighter blur & border) */
 .glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  @apply bg-white/5 border border-white/10 backdrop-blur-md;
 }
 
-/* Header performance */
-:where(header){will-change:transform;}
+/* Link focus ring for accessibility (keyboard users) */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  @apply outline-none ring-2 ring-[var(--brand-primary)] ring-offset-2 ring-offset-[#0a0f1a] rounded-md;
+}
+
+/* Images never overflow on small screens */
+img, svg, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Typography: prevent overflow on long words/URLs */
+.prose, .copy {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Reduce motion if user prefers */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Mobile-only polish (non-destructive) ------------------------------- */
+
+/* Prevent zoomed text and odd scaling on some Android devices */
+@supports (-webkit-touch-callout: none) {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
+/* Universal safe tweaks */
+img, video { max-width: 100%; height: auto; }
+.prose, .copy { overflow-wrap: anywhere; word-break: break-word; }
+:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--brand-primary); }
+
+/* ≤ 480px: tighten vertical rhythm, keep layout intact */
+@media (max-width: 480px) {
+  /* make base container padding a touch narrower on very small phones */
+  .px-4 { padding-left: 0.875rem !important; padding-right: 0.875rem !important; }
+
+  /* sections that use py-14 → slightly shorter to avoid long scroll */
+  .py-14 { padding-top: 2.25rem !important; padding-bottom: 2.25rem !important; }
+
+  /* reduce large card banner heights used in program/resource/blog cards (h-44) */
+  .h-44 { height: 9.5rem !important; }
+
+  /* breadcrumb/hero headings stay readable, but not oversized */
+  h1 { font-size: clamp(24px, 7vw, 34px); line-height: 1.15; }
+  h2 { font-size: clamp(18px, 5.6vw, 26px); line-height: 1.2; }
+
+  /* glass: lighten blur/border for low-end mobile GPUs (keeps look the same) */
+  .glass { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-color: rgba(255,255,255,0.10); }
+
+  /* shrink big gaps a touch so grids fit without overflow */
+  .gap-6 { gap: 1rem !important; }
+  .gap-10 { gap: 1.25rem !important; }
+
+  /* ensure all grid cards naturally stack as one column when space is tight */
+  .md\:grid-cols-2, .md\:grid-cols-3, .lg\:grid-cols-3, .lg\:grid-cols-4 { grid-template-columns: 1fr !important; }
+
+  /* buttons can wrap (prevents overflowing text on narrow devices) */
+  a, button { white-space: normal; }
+
+  /* sticky header overlap fix when jumping to anchors */
+  :target { scroll-margin-top: 76px; }
+}
+
+/* ≤ 360px: micro phones (older Android, iPhone SE width) */
+@media (max-width: 360px) {
+  .px-4 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+  .py-14 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+  .h-44 { height: 8.75rem !important; }
+  h1 { font-size: clamp(22px, 7.6vw, 30px); }
+  h2 { font-size: clamp(17px, 5.8vw, 24px); }
+}

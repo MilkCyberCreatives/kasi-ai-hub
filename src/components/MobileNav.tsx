@@ -1,57 +1,103 @@
+// src/components/MobileNav.tsx
 'use client';
-import { useState, useEffect } from 'react';
+
 import Link from 'next/link';
-import { NAV_LINKS } from '@/lib/nav';
+import { useEffect, useState } from 'react';
+
+const LINKS = [
+  { href: '/', label: 'Home' },
+  { href: '/programs', label: 'Programs' },
+  { href: '/resources', label: 'Resources' },
+  { href: '/community', label: 'Community' },
+  { href: '/about', label: 'About' },
+  { href: '/blog', label: 'Blog' },
+];
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
 
+  // Lock page scroll when the drawer is open
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    const root = document.documentElement;
+    if (open) root.style.overflow = 'hidden';
+    else root.style.overflow = '';
+    return () => { root.style.overflow = ''; };
   }, [open]);
 
   return (
     <>
+      {/* Hamburger button (visible only on mobile) */}
       <button
-        onClick={() => setOpen(true)}
-        className="md:hidden inline-flex items-center justify-center rounded-lg border border-black/10 px-3 py-2"
         aria-label="Open menu"
+        className="md:hidden rounded-lg p-2 hover:bg-white/10 text-white"
+        onClick={() => setOpen(true)}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
         </svg>
       </button>
 
+      {/* Drawer */}
       {open && (
-        <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-0 h-full w-[86%] max-w-xs bg-white shadow-xl p-6 flex flex-col">
-            <div className="flex items-center justify-between">
-              <span className="font-semibold">Menu</span>
-              <button onClick={() => setOpen(false)} aria-label="Close menu">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M6 6l12 12M18 6l-12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        <div className="fixed inset-0 z-[100] md:hidden">
+          {/* scrim */}
+          <button
+            aria-label="Close menu"
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setOpen(false)}
+          />
+          {/* panel */}
+          <div className="absolute right-0 top-0 h-full w-[86%] max-w-xs bg-black/80 border-l border-white/10 backdrop-blur-md shadow-xl">
+            <div className="flex items-center justify-between px-5 h-16 border-b border-white/10">
+              <span className="font-bold text-xl text-white">
+                <span className="text-white">kasi</span>
+                <span className="text-[var(--brand-primary)]">AI</span>
+                <span className="text-white">hub</span>
+              </span>
+              <button
+                aria-label="Close"
+                className="rounded-lg p-2 text-white/90 hover:bg-white/10"
+                onClick={() => setOpen(false)}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.3 5.71 12 12.01l-6.3-6.3-1.4 1.41 6.29 6.29-6.3 6.3 1.41 1.41 6.3-6.3 6.29 6.3 1.41-1.41-6.3-6.3 6.3-6.29z" />
                 </svg>
               </button>
             </div>
 
-            <nav className="mt-6 space-y-3">
-              {NAV_LINKS.map(({ href, label }) => (
-                <Link key={href} href={href} className="block rounded-lg px-3 py-2 hover:bg-black/5">
-                  {label}
-                </Link>
-              ))}
-            </nav>
+            <nav className="px-3 py-4">
+              <ul className="space-y-1">
+                {LINKS.map((l) => (
+                  <li key={l.href}>
+                    <Link
+                      href={l.href}
+                      className="block rounded-lg px-3 py-3 text-white/90 hover:bg-white/10"
+                      onClick={() => setOpen(false)}
+                    >
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
 
-            <div className="mt-6 grid gap-3">
-              <Link href="/ai-search" className="w-full text-center rounded-lg px-4 py-2 bg-black text-white">
-                AI Search
-              </Link>
-              <Link href="/book" className="w-full text-center rounded-lg px-4 py-2 border border-black/10">
-                Book a Session
-              </Link>
-            </div>
+              <div className="mt-4 grid gap-2 px-3">
+                <Link
+                  href="/ai-search"
+                  className="text-center rounded-lg px-4 py-2 border border-white/20 text-white hover:bg-white/10"
+                  onClick={() => setOpen(false)}
+                >
+                  AI Search
+                </Link>
+                <Link
+                  href="/book"
+                  className="text-center rounded-lg px-4 py-2 text-black font-medium"
+                  style={{ background: 'var(--brand-primary)' }}
+                  onClick={() => setOpen(false)}
+                >
+                  Book a Session
+                </Link>
+              </div>
+            </nav>
           </div>
         </div>
       )}
