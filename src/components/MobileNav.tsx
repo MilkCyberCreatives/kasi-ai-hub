@@ -3,20 +3,14 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-
-const LINKS = [
-  { href: '/', label: 'Home' },
-  { href: '/programs', label: 'Programs' },
-  { href: '/resources', label: 'Resources' },
-  { href: '/community', label: 'Community' },
-  { href: '/about', label: 'About' },
-  { href: '/blog', label: 'Blog' },
-];
+import { usePathname } from 'next/navigation';
+import { NAV_LINKS } from '@/lib/nav';
 
 export default function MobileNav() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  // Lock page scroll when the drawer is open
+  // Lock page scroll when open
   useEffect(() => {
     const root = document.documentElement;
     if (open) root.style.overflow = 'hidden';
@@ -26,7 +20,7 @@ export default function MobileNav() {
 
   return (
     <>
-      {/* Hamburger button (visible only on mobile) */}
+      {/* Hamburger (mobile only) */}
       <button
         aria-label="Open menu"
         className="md:hidden rounded-lg p-2 hover:bg-white/10 text-white"
@@ -67,17 +61,22 @@ export default function MobileNav() {
 
             <nav className="px-3 py-4">
               <ul className="space-y-1">
-                {LINKS.map((l) => (
-                  <li key={l.href}>
-                    <Link
-                      href={l.href}
-                      className="block rounded-lg px-3 py-3 text-white/90 hover:bg-white/10"
-                      onClick={() => setOpen(false)}
-                    >
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
+                {NAV_LINKS.map(({ href, label }) => {
+                  const active = pathname === href;
+                  return (
+                    <li key={href}>
+                      <Link
+                        href={href}
+                        className={`block rounded-lg px-3 py-3 ${
+                          active ? 'text-white font-medium bg-white/10' : 'text-white/90 hover:bg-white/10'
+                        }`}
+                        onClick={() => setOpen(false)}
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
 
               <div className="mt-4 grid gap-2 px-3">

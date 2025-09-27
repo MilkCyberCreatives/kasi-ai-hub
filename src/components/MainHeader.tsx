@@ -19,25 +19,24 @@ export default function MainHeader() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Keep header transparent over hero on home, otherwise glass
+  // Transparent only on home above the fold
   const overHero = pathname === '/' && !scrolled;
 
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all ${
+        className={`fixed top-0 left-0 right-0 z-40 transition-all h-16 ${
           overHero ? 'bg-transparent' : 'glass'
         }`}
         data-agent-track="header"
       >
-        <div
-          className={`mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-3 md:py-4 ${
-            overHero ? 'text-white' : 'text-white'
-          }`}
-        >
+        {/* expose header height to CSS for breadcrumb spacing */}
+        <style>{`:root{--header-h:64px;}`}</style>
+
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4">
           <Logo />
 
-          {/* Desktop Nav (unchanged) */}
+          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-4">
             {NAV_LINKS.map(({ href, label }) => {
               const active = pathname === href;
@@ -56,7 +55,7 @@ export default function MainHeader() {
             })}
           </nav>
 
-          {/* Desktop Actions (unchanged) */}
+          {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-2">
             <Link
               href="/ai-search"
@@ -75,12 +74,12 @@ export default function MainHeader() {
             </Link>
           </div>
 
-          {/* Mobile button + drawer lives here */}
+          {/* Mobile hamburger + drawer */}
           <MobileNav />
         </div>
       </header>
 
-      {/* Floating scroll-to-top button (appears after you scroll) */}
+      {/* Back-to-top FAB */}
       <ScrollTop />
     </>
   );

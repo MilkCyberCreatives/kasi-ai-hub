@@ -6,7 +6,7 @@ import Link from 'next/link';
 type Props = {
   title: string;
   subtitle?: string;
-  bgImage?: string; // fallback if not provided
+  bgImage?: string; // defaults to shared image
   currentPage?: string;
 };
 
@@ -18,31 +18,25 @@ export default function BreadcrumbHero({
 }: Props) {
   return (
     <section
-      className="relative h-60 md:h-72 flex items-center justify-center text-center"
+      className="relative flex items-center justify-center text-center"
       style={{
         backgroundImage: `url(${bgImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        // add padding top so it never sits under the fixed header
+        paddingTop: 'calc(var(--header-h, 64px) + 12px)',
+        minHeight: '220px',
       }}
     >
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/60" />
-
-      {/* Content */}
-      <div className="relative z-10 px-4">
-        <h1 className="text-3xl md:text-4xl font-bold text-white">{title}</h1>
+      <div className="relative z-10 px-4 w-full">
+        <h1 className="text-[clamp(22px,4.8vw,40px)] font-bold text-white">{title}</h1>
         {subtitle && (
-          <p className="mt-2 text-white/80 max-w-2xl mx-auto">{subtitle}</p>
+          <p className="mt-2 text-white/85 text-[clamp(13px,2.6vw,18px)] max-w-3xl mx-auto">{subtitle}</p>
         )}
-
-        {/* Breadcrumb nav */}
-        <nav aria-label="Breadcrumb" className="mt-4">
-          <ol className="flex justify-center items-center gap-2 text-sm text-white/70">
-            <li>
-              <Link href="/" className="hover:text-white">
-                Home
-              </Link>
-            </li>
+        <nav aria-label="Breadcrumb" className="mt-3">
+          <ol className="flex justify-center items-center gap-2 text-sm text-white/75">
+            <li><Link href="/" className="hover:text-white">Home</Link></li>
             <li className="text-white/50">/</li>
             <li className="text-white">{currentPage || title}</li>
           </ol>

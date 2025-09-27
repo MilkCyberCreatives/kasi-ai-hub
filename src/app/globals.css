@@ -121,3 +121,18 @@ img, video { max-width: 100%; height: auto; }
   h1 { font-size: clamp(22px, 7.6vw, 30px); }
   h2 { font-size: clamp(17px, 5.8vw, 24px); }
 }
+
+/* ---- mobile polish applied globally without changing desktop UI ---- */
+
+/* header height variable is set from MainHeader (64px).
+   ensure sections that come after breadcrumb have nice rhythm */
+@media (max-width: 640px) {
+  .glass { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .mt-10 { margin-top: 2rem !important; }
+  .py-10 { padding-top: 2.25rem !important; padding-bottom: 2.25rem !important; }
+  .h-44 { height: 9.5rem !important; } /* image banners */
+  a, button { white-space: normal; }     /* prevent overflowing CTAs */
+}
+
+/* keep breadcrumb from sitting under fixed header even if other pages use a different image height */
+.breadcrumb-safe { padding-top: calc(var(--header-h, 64px) + 12px) !important; }
