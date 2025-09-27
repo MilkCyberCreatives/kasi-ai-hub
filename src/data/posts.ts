@@ -1,7 +1,9 @@
 // src/data/posts.ts
+import 'server-only'; // ✅ guarantees this file never enters the client bundle
 import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
+import { cache } from 'react';
 
 export type PostItem = {
   slug: string;
@@ -31,26 +33,48 @@ function safeExcerpt(text: string, max = 155) {
   return t.length > max ? t.slice(0, max - 1) + '…' : t;
 }
 
+/** Read a single post and return its raw MD/MDX content + frontmatter */
+export function getPostBySlug(slug: string): { content: string; data: Record<string, any> } {
+  const base = path.join(BLOG_DIR, slug.replace(/\.mdx?$/i, ''));
+  const mdxPath = `${base}.mdx`;
+  const mdPath = `${base}.md`;
+
+  const filePath = fs.existsSync(mdxPath) ? mdxPath : mdPath;
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Post not found: ${slug}`);
+  }
+
+  const raw = fs.readFileSync(filePath, 'utf8');
+  const { data, content } = matter(raw);
+  return { data, content };
+}
+
+/** Return available slugs (without extension) */
+export function getPostSlugs(): string[] {
+  if (!fs.existsSync(BLOG_DIR)) return [];
+  return fs
+    .readdirSync(BLOG_DIR)
+    .filter((f) => f.endsWith('.md') || f.endsWith('.mdx'))
+    .map((f) => f.replace(/\.mdx?$/i, ''));
+}
+
 function getPostsInternal(): PostItem[] {
   if (!fs.existsSync(BLOG_DIR)) return [];
 
-  const files = fs.readdirSync(BLOG_DIR).filter((f) => f.endsWith('.mdx'));
+  const files = fs.readdirSync(BLOG_DIR).filter((f) => f.endsWith('.md') || f.endsWith('.mdx'));
 
   const items = files.map((filename) => {
-    const slug = filename.replace(/\.mdx$/i, '');
+    const slug = filename.replace(/\.mdx?$/i, '');
     const fullPath = path.join(BLOG_DIR, filename);
     const raw = fs.readFileSync(fullPath, 'utf8');
     const { data, content } = matter(raw);
 
     const title = (data.title as string) || slug;
     const date =
-      (data.date as string) ||
-      new Date(fs.statSync(fullPath).mtime).toISOString();
-    const excerpt =
-      (data.excerpt as string) ||
-      safeExcerpt(content);
+      (data.date as string) || new Date(fs.statSync(fullPath).mtime).toISOString();
+    const excerpt = (data.excerpt as string) || safeExcerpt(content);
     const cover = (data.cover as string) || DEFAULT_COVER;
-    const tags = (data.tags as string[]) || [];
+    const tags = Array.isArray(data.tags) ? (data.tags as string[]) : [];
 
     return {
       slug,
@@ -68,5 +92,8 @@ function getPostsInternal(): PostItem[] {
   return items;
 }
 
-// Export a concrete array for your page to import statically
-export const posts: PostItem[] = getPostsInternal();
+/** Memoized list for server usage */
+export const listPosts = cache((): PostItem[] => getPostsInternal());
+
+/** Keep this if your pages currently import `posts` directly */
+export const posts: PostItem[] = listPosts();
