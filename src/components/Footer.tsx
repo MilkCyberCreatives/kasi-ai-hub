@@ -8,7 +8,7 @@ export default function Footer() {
     <footer className="mt-16 border-t border-white/10 bg-gradient-to-b from-transparent to-black/30">
       <div className="mx-auto max-w-7xl px-4 py-10">
         {/* Top */}
-        <div className="grid gap-10 md:grid-cols-4">
+        <div className="grid gap-10 md:grid-cols-4 place-items-center md:place-items-start text-center md:text-left">
           {/* Brand */}
           <div>
             <Link href="/" className="inline-flex items-center">
@@ -21,12 +21,12 @@ export default function Footer() {
                 <span className="text-white">hub</span>
               </span>
             </Link>
-            <p className="mt-3 text-sm text-white/70">
+            <p className="mt-3 text-sm text-white/70 max-w-sm">
               Practical AI training for entrepreneurs, teams, and communities.
             </p>
 
             {/* Socials */}
-            <div className="mt-4 flex items-center gap-3">
+            <div className="mt-4 flex items-center justify-center md:justify-start gap-3">
               <a
                 href="https://wa.me/message"
                 target="_blank"
