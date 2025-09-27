@@ -19,18 +19,16 @@ export default function MainHeader() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Transparent only on home above the fold
   const overHero = pathname === '/' && !scrolled;
 
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all h-16 ${
+        className={`fixed top-0 left-0 right-0 z-40 transition-all h-16 isolate ${
           overHero ? 'bg-transparent' : 'glass'
         }`}
         data-agent-track="header"
       >
-        {/* expose header height to CSS for breadcrumb spacing */}
         <style>{`:root{--header-h:64px;}`}</style>
 
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4">
@@ -74,7 +72,7 @@ export default function MainHeader() {
             </Link>
           </div>
 
-          {/* Mobile hamburger + drawer */}
+          {/* Mobile menu (now portal-based, identical across pages) */}
           <MobileNav />
         </div>
       </header>
