@@ -42,28 +42,29 @@ export default function ValueStrip() {
       </div>
 
       {/* Trust bar */}
-      <div className="mt-12 glass rounded-2xl p-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="mt-12 glass rounded-2xl p-4 sm:p-6">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-5 md:gap-6">
           <div className="text-white/85 text-sm text-center md:text-left">
             ✅ Trusted by <strong>200+ Gauteng Community Entrepreneurs</strong>
           </div>
 
           {/* Partner logos */}
-          <div className="flex items-center justify-center gap-10">
+          {/* NOTE: Only mobile sizing/spacing tweaks. Keeps look, just constrains height & wraps nicely. */}
+          <div className="w-full md:w-auto flex items-center justify-center flex-wrap gap-x-6 gap-y-3 sm:gap-x-10">
             <img
               src="/images/home/partners/partner-1.png"
-              alt="Partner 1"
-              className="h-10 w-auto brightness-0 invert opacity-90"
+              alt="Milkcyber"
+              className="h-7 sm:h-8 md:h-9 w-auto object-contain brightness-0 invert opacity-90 flex-shrink-0"
             />
             <img
               src="/images/home/partners/partner-2.png"
-              alt="Partner 2"
-              className="h-10 w-auto brightness-0 invert opacity-90"
+              alt="Baya"
+              className="h-7 sm:h-8 md:h-9 w-auto object-contain brightness-0 invert opacity-90 flex-shrink-0"
             />
             <img
               src="/images/home/partners/partner-3.png"
-              alt="Partner 3"
-              className="h-10 w-auto brightness-0 invert opacity-90"
+              alt="Lethela"
+              className="h-7 sm:h-8 md:h-9 w-auto object-contain brightness-0 invert opacity-90 flex-shrink-0"
             />
           </div>
         </div>
