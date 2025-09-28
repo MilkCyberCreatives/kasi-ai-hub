@@ -13,7 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
     "types": ["node"],
     "incremental": true,
@@ -24,6 +24,7 @@
   "include": [
     "next-env.d.ts",
     "src/**/*",
+    "content/**/*",
     ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]

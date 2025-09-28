@@ -2,12 +2,13 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    optimizePackageImports: [],
+    optimizeCss: true
   },
   images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: '**' }
-    ]
-  }
+    remotePatterns: [{ protocol: 'https', hostname: '**' }]
+  },
+  eslint: { ignoreDuringBuilds: false },
+  typescript: { ignoreBuildErrors: false }
 };
+
 export default nextConfig;

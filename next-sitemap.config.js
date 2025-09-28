@@ -1,6 +1,7 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: 'https://kasiaihub.com',
+  siteUrl: process.env.SITE_URL || 'https://kasiaihub.com',
   generateRobotsTxt: true,
+  generateIndexSitemap: true,
   sitemapSize: 7000
 };

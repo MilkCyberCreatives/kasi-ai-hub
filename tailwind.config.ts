@@ -1,4 +1,3 @@
-// tailwind.config.ts
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
@@ -8,6 +7,7 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/lib/**/*.{js,ts,jsx,tsx,mdx}',
     './src/**/*.{js,ts,jsx,tsx,mdx}',
+    './content/**/*.{md,mdx}'
   ],
   theme: {
     extend: {
@@ -17,17 +17,16 @@ const config: Config = {
           secondary: 'var(--brand-secondary)',
           accent: 'var(--brand-accent)',
           ink: 'var(--brand-ink)',
-          bg: 'var(--brand-bg)',
-        },
+          bg: 'var(--brand-bg)'
+        }
       },
       container: {
         center: true,
-        padding: '1rem',
-      },
-    },
+        padding: '1rem'
+      }
+    }
   },
-  // Keep empty unless you've installed extras like @tailwindcss/typography
-  plugins: [],
+  plugins: []
 }
 
 export default config
