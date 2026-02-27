@@ -9,7 +9,6 @@ import ProgramsTeaser from '@/components/ProgramsTeaser';
 import ProgramFinder from '@/components/ProgramFinder';
 import LeadCapture from '@/components/LeadCapture';
 import HowItWorks from '@/components/HowItWorks';
-import TrainingLocations from '@/components/TrainingLocations';
 import Testimonials from '@/components/Testimonials';
 import HomeFAQ from '@/components/HomeFAQ';
 import StatsStrip from '@/components/StatsStrip';
@@ -94,7 +93,6 @@ export default function Page() {
       <ProgramFinder />
       <LeadCapture />
       <HowItWorks />
-      <TrainingLocations />
       <Testimonials />
       <HomeFAQ />
       <StatsStrip />
