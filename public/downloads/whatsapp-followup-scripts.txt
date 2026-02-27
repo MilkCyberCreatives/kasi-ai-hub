@@ -1,0 +1,10 @@
+﻿WhatsApp Follow-up Scripts
+
+1) New lead response:
+Hi {{name}}, thanks for reaching out. We can help you automate {{goal}}. Want a quick 15-minute call this week?
+
+2) Reminder response:
+Hi {{name}}, checking in on your request. We have open slots on {{date}}. Would that work?
+
+3) Conversion response:
+Great choice. I have reserved your session. You will receive a confirmation shortly.

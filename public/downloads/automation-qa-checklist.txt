@@ -1,0 +1,8 @@
+﻿Automation QA Checklist
+
+- Inputs validated
+- Sensitive data removed
+- Prompt tested with edge cases
+- Output format stable
+- Escalation path defined
+- Weekly review scheduled

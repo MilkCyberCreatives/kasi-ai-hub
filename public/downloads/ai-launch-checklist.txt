@@ -1,0 +1,8 @@
+﻿KasiAI Hub - AI Launch Checklist
+
+1. Define one workflow objective.
+2. Confirm owner and reviewer.
+3. Capture baseline metrics.
+4. Build first prompt stack.
+5. Test against 5 real inputs.
+6. Launch and monitor daily.

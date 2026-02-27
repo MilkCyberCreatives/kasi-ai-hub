@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { usePathname } from 'next/navigation';
+import Logo from '@/components/Logo';
 import { NAV_LINKS } from '@/lib/nav';
 
 const DRAWER_Z = 9999;
@@ -74,11 +75,7 @@ export default function MobileNav() {
         aria-label="Mobile navigation"
       >
         <div className="flex items-center justify-between px-5 h-16 border-b border-white/10">
-          <span className="font-bold text-xl text-white">
-            <span className="text-white">kasi</span>
-            <span className="text-[var(--brand-primary)]">AI</span>
-            <span className="text-white">hub</span>
-          </span>
+          <Logo size={24} />
           <button
             ref={closeBtnRef}
             aria-label="Close"
