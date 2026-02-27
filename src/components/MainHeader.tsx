@@ -73,7 +73,7 @@ export default function MainHeader() {
                     key={href}
                     href={href}
                     className={[
-                      'rounded-md px-3 py-2 text-[15px] leading-none uppercase tracking-[0.08em] transition',
+                      'rounded-md px-3 py-2 text-[15px] leading-none transition',
                       active ? 'font-semibold text-white' : 'text-white/85 hover:text-white',
                     ].join(' ')}
                     aria-current={active ? 'page' : undefined}
@@ -87,13 +87,13 @@ export default function MainHeader() {
             <div className="hidden md:flex items-center gap-3 shrink-0">
               <Link
                 href="/ai-search"
-                className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm uppercase tracking-[0.08em] border border-white/20 text-white/90 hover:bg-white/10"
+                className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm border border-white/20 text-white/90 hover:bg-white/10"
               >
                 AI Search
               </Link>
               <Link
                 href="/book"
-                className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm uppercase tracking-[0.08em] text-black"
+                className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm text-black"
                 style={{ background: 'var(--brand-primary)' }}
               >
                 Book a Session

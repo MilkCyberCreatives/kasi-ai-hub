@@ -99,7 +99,7 @@ export default function MobileNav() {
                 <li key={href}>
                   <Link
                     href={href}
-                    className={`block rounded-lg px-3 py-3 uppercase tracking-[0.08em] transition ${
+                    className={`block rounded-lg px-3 py-3 transition ${
                       active ? 'text-white font-medium bg-white/10' : 'text-white/90 hover:bg-white/10'
                     }`}
                     onClick={() => setOpen(false)}
@@ -114,14 +114,14 @@ export default function MobileNav() {
           <div className="mt-4 grid gap-2 px-3">
             <Link
               href="/ai-search"
-              className="text-center rounded-lg px-4 py-2 uppercase tracking-[0.08em] border border-white/20 text-white hover:bg-white/10 transition"
+              className="text-center rounded-lg px-4 py-2 border border-white/20 text-white hover:bg-white/10 transition"
               onClick={() => setOpen(false)}
             >
               AI Search
             </Link>
             <Link
               href="/book"
-              className="text-center rounded-lg px-4 py-2 uppercase tracking-[0.08em] text-black font-medium transition"
+              className="text-center rounded-lg px-4 py-2 text-black font-medium transition"
               style={{ background: 'var(--brand-primary)' }}
               onClick={() => setOpen(false)}
             >
