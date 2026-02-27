@@ -1,6 +1,4 @@
 // src/components/Testimonials.tsx
-'use client';
-
 import Image from 'next/image';
 
 const TESTIMONIALS = [
@@ -48,7 +46,7 @@ export default function Testimonials() {
 
       {/* Marquee wrapper */}
       <div className="relative mt-8 overflow-hidden">
-        <div className="track flex gap-6">
+        <div className="testimonials-track flex gap-6">
           {[...TESTIMONIALS, ...TESTIMONIALS].map((t, i) => (
             <article
               key={i}
@@ -79,21 +77,6 @@ export default function Testimonials() {
             </article>
           ))}
         </div>
-
-        <style jsx>{`
-          .track {
-            width: max-content;
-            animation: slide 28s linear infinite;
-          }
-          .track:hover { animation-play-state: paused; }
-          @keyframes slide {
-            0% { transform: translateX(0) }
-            100% { transform: translateX(-50%) }
-          }
-          @media (prefers-reduced-motion: reduce) {
-            .track { animation: none; }
-          }
-        `}</style>
       </div>
     </section>
   );
