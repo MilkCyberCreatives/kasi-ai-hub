@@ -1,21 +1,25 @@
 // src/components/Logo.tsx
-'use client';
+import Image from 'next/image';
 
-/** Inline SVG — avoids next/image & any icon recursion */
-export default function Logo({ size = 44 }: { size?: number }) {
+type LogoProps = {
+  size?: number;
+  priority?: boolean;
+};
+
+const LOGO_ASPECT_RATIO = 32 / 5.31;
+
+export default function Logo({ size = 20, priority = false }: LogoProps) {
+  const width = Math.round(size * LOGO_ASPECT_RATIO);
+
   return (
-    <div aria-label="KasiAI Hub" style={{ width: size, height: size }} className="shrink-0 select-none">
-      <svg viewBox="0 0 64 64" width={size} height={size} role="img" aria-hidden="true">
-        <defs>
-          <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0%" stopColor="#43d787" />
-            <stop offset="100%" stopColor="#2aa86b" />
-          </linearGradient>
-        </defs>
-        <rect x="0" y="0" width="64" height="64" rx="14" fill="#0f1722" />
-        <path d="M18 17h6v30h-6zM24 33l12-16h7l-12 16 12 14h-7L24 33z" fill="url(#g)" />
-        <circle cx="46" cy="19" r="3" fill="#43d787" />
-      </svg>
-    </div>
+    <Image
+      src="/logo.svg"
+      alt="KasiAI Hub"
+      width={width}
+      height={size}
+      priority={priority}
+      className="h-auto w-auto shrink-0 select-none"
+    />
   );
 }
+

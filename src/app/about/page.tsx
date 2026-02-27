@@ -17,7 +17,7 @@ export default function AboutPage() {
     '@type': 'Organization',
     name: 'kasiAIhub',
     url: 'https://kasiaihub.com/about',
-    logo: 'https://kasiaihub.com/favicon.svg',
+    logo: 'https://kasiaihub.com/logo.svg',
     sameAs: [],
     foundingLocation: 'South Africa',
     description:

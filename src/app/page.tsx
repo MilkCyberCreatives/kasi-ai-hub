@@ -24,7 +24,7 @@ export default function Page() {
     '@type': 'Organization',
     name: 'kasiAIhub',
     url: 'https://kasiaihub.com',
-    logo: 'https://kasiaihub.com/favicon.svg',
+    logo: 'https://kasiaihub.com/logo.svg',
     sameAs: [],
   };
 
