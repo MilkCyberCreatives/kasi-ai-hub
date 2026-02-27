@@ -1,8 +1,13 @@
-export const NAV_LINKS = [
-  { href: '/', label: 'Home' },
-  { href: '/programs', label: 'Programs' },
-  { href: '/resources', label: 'Resources' },
+// src/lib/nav.ts
+export type NavLink = { href: string; label: string }
+
+export const NAV_LINKS: NavLink[] = [
+  { href: '/',          label: 'Home' },
+  { href: '/programs',  label: 'Programs' },
+  { href: '/courses',   label: 'Courses' },
+  { href: '/blog',      label: 'Blog' },
   { href: '/community', label: 'Community' },
-  { href: '/about', label: 'About' },
-  { href: '/blog', label: 'Blog' }
-];
+  { href: '/events',    label: 'Events' },
+  { href: '/podcast',   label: 'Podcast' },
+  { href: '/resources', label: 'Resources' }
+]

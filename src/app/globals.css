@@ -1,205 +1,86 @@
+/* src/app/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ------------------------------------------------------------------ */
-/* Root theme & sensible defaults                                     */
-/* ------------------------------------------------------------------ */
-:root {
-  --brand-primary: #6cf0a8;
-  /* Fallback header height (overridden by MainHeader inline <style>) */
-  --header-h: 64px;
+:root{
+  --brand-primary:#43d787;
+  --brand-secondary:#2aa86b;
+  --brand-ink:#ffffff;
+  --brand-bg:#0a0f1a;
+  --header-h:84px;  /* initial; pages (not home) reserve this much space */
+  --ribbon-h:40px;
 }
 
-html,
-body {
-  @apply h-full bg-[#0a0f1a] text-white antialiased;
+html,body{height:100%}
+html{color-scheme:dark; scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--brand-bg);
+  color:var(--brand-ink);
+  padding-top:var(--header-h);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
 
-body {
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+/* Home removes the reserve so hero sits behind header+ribbon */
+.no-safe-top{padding-top:0 !important}
+
+*,*::before,*::after{box-sizing:border-box}
+img,svg,video{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+
+.container-x{@apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8}
+
+/* ---------------- Header states ---------------- */
+.header-glass{
+  background:rgba(8,12,20,.50);
+  backdrop-filter:saturate(1.1) blur(12px);
+  -webkit-backdrop-filter:saturate(1.1) blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.10);
+  border-radius:0;
+  box-shadow:0 8px 28px rgba(0,0,0,.35);
 }
 
-/* Respect device safe areas (iOS notch, etc.) */
-.safe-px {
-  padding-left: max(1rem, env(safe-area-inset-left));
-  padding-right: max(1rem, env(safe-area-inset-right));
+/* Top of page: remove divider so it can hug the ribbon */
+.over-hero{
+  background:rgba(8,12,20,.28)!important;
+  border-bottom:0!important;
+  box-shadow:none!important;
 }
 
-/* Section rhythm */
-.section {
-  @apply py-10 md:py-14;
+.is-scrolled{
+  background:rgba(8,12,20,.62)!important;
+  border-bottom:1px solid rgba(255,255,255,.10)!important;
+  box-shadow:0 8px 28px rgba(0,0,0,.35)!important;
 }
 
-/* Max width container (intentionally not using Tailwind's built-in .container) */
-.container {
-  @apply mx-auto max-w-7xl safe-px;
+/* ---------------- Generic glass (badges/cards) ---------------- */
+.glass{
+  background:rgba(12,18,30,.55);
+  backdrop-filter:saturate(1.1) blur(10px);
+  -webkit-backdrop-filter:saturate(1.1) blur(10px);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:14px;
 }
 
-/* Glass effect tuned for mobile GPUs */
-.glass {
-  @apply bg-white/5 border border-white/10 backdrop-blur-md;
+/* ---------------- Ribbon (now inside header) ---------------- */
+.header-ribbon{
+  position:absolute;
+  left:0; right:0;
+  bottom:-1px; /* overlap by 1px to kill any hairline on some GPUs */
+  background:rgba(8,12,20,0.32);
+  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(6px);
+  z-index:10;
+}
+.ribbon-row{
+  height:var(--ribbon-h);
+  min-height:var(--ribbon-h);
+  padding-top:0; padding-bottom:0;
+  border-top:0;
+  border-bottom:1px solid rgba(255,255,255,.08);
 }
 
-/* Accessible focus ring */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  @apply outline-none ring-2 ring-[var(--brand-primary)] ring-offset-2 ring-offset-[#0a0f1a] rounded-md;
-}
-
-/* Media elements never overflow */
-img,
-svg,
-video {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Long text never breaks layout */
-.prose,
-.copy {
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-/* Honor reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
-    transition: none !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Prevent weird auto-zoom/scaling on some Android browsers */
-@supports (-webkit-touch-callout: none) {
-  html {
-    -webkit-text-size-adjust: 100%;
-  }
-}
-
-/* ------------------------------------------------------------------ */
-/* Mobile polish (non-destructive): up to 480px                       */
-/* ------------------------------------------------------------------ */
-@media (max-width: 480px) {
-  /* Slightly narrower base padding for very small phones */
-  .px-4 {
-    padding-left: 0.875rem !important;
-    padding-right: 0.875rem !important;
-  }
-
-  /* Trim long sections a touch */
-  .py-14 {
-    padding-top: 2.25rem !important;
-    padding-bottom: 2.25rem !important;
-  }
-
-  /* Card banner images used across pages */
-  .h-44 {
-    height: 9.5rem !important;
-  }
-
-  /* Heading scale so titles don’t crowd */
-  h1 {
-    font-size: clamp(24px, 7vw, 34px);
-    line-height: 1.15;
-  }
-  h2 {
-    font-size: clamp(18px, 5.6vw, 26px);
-    line-height: 1.2;
-  }
-
-  /* Slightly lighter blur is friendlier on low-end GPUs */
-  .glass {
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-color: rgba(255, 255, 255, 0.10);
-  }
-
-  /* Tighten common gaps */
-  .gap-6 {
-    gap: 1rem !important;
-  }
-  .gap-10 {
-    gap: 1.25rem !important;
-  }
-
-  /* Force single-column grids when space is tight */
-  .md\:grid-cols-2,
-  .md\:grid-cols-3,
-  .lg\:grid-cols-3,
-  .lg\:grid-cols-4 {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Allow CTA text to wrap instead of overflowing */
-  a,
-  button {
-    white-space: normal;
-  }
-
-  /* Anchor jump targets won’t hide under the fixed header */
-  :target {
-    scroll-margin-top: 76px;
-  }
-}
-
-/* Micro phones (≤360px) */
-@media (max-width: 360px) {
-  .px-4 {
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-  }
-  .py-14 {
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
-  }
-  .h-44 {
-    height: 8.75rem !important;
-  }
-  h1 {
-    font-size: clamp(22px, 7.6vw, 30px);
-  }
-  h2 {
-    font-size: clamp(17px, 5.8vw, 24px);
-  }
-}
-
-/* ------------------------------------------------------------------ */
-/* Small screens (≤640px): global tweaks that keep desktop identical  */
-/* ------------------------------------------------------------------ */
-@media (max-width: 640px) {
-  .glass {
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
-  .mt-10 {
-    margin-top: 2rem !important;
-  }
-  .py-10 {
-    padding-top: 2.25rem !important;
-    padding-bottom: 2.25rem !important;
-  }
-  .h-44 {
-    height: 9.5rem !important;
-  }
-  a,
-  button {
-    white-space: normal;
-  }
-}
-
-/* ------------------------------------------------------------------ */
-/* Breadcrumb safety: keeps content clear of the fixed header         */
-/* Apply className="breadcrumb-safe" to any hero/breadcrumb section   */
-/* (BreadcrumbHero already does this via inline padding)              */
-/* ------------------------------------------------------------------ */
-.breadcrumb-safe {
-  padding-top: calc(var(--header-h, 64px) + 12px) !important;
-}
+::selection{background:color-mix(in oklab, var(--brand-primary) 35%, white); color:#051013}
+:focus-visible{outline:2px solid color-mix(in oklab, var(--brand-primary) 70%, white 30%); outline-offset:2px; border-radius:6px}

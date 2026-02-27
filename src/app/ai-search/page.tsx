@@ -13,7 +13,7 @@ type Result = {
 };
 
 // optional client tracker (uses your /api/track route if present)
-async function track(name: string, data: Record<string, any> = {}) {
+async function track(name: string, data: Record<string, unknown> = {}) {
   try {
     await fetch('/api/track', {
       method: 'POST',
@@ -116,7 +116,7 @@ export default function AISearchPage() {
     }
   }
 
-  function useSuggestion(s: string) {
+  function applySuggestion(s: string) {
     setQ(s);
     setTimeout(() => ask(), 0);
   }
@@ -186,7 +186,7 @@ export default function AISearchPage() {
               <button
                 key={s}
                 type="button"
-                onClick={() => useSuggestion(s)}
+                onClick={() => applySuggestion(s)}
                 className="rounded-full border border-white/20 px-3 py-1 text-xs text-white/80 hover:bg-white/10"
               >
                 {s}

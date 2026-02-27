@@ -1,23 +1,21 @@
 // src/components/Logo.tsx
 'use client';
 
-import Link from 'next/link';
-
-type Props = {
-  className?: string;
-};
-
-export default function Logo({ className = '' }: Props) {
+/** Inline SVG — avoids next/image & any icon recursion */
+export default function Logo({ size = 44 }: { size?: number }) {
   return (
-    <Link href="/" aria-label="kasiAIhub home" className={`inline-flex items-center ${className}`}>
-      <span
-        className="font-bold tracking-tight leading-none text-3xl md:text-4xl"
-        style={{ letterSpacing: '-0.02em' }}
-      >
-        <span className="text-current">kasi</span>
-        <span className="text-[var(--brand-primary)]">AI</span>
-        <span className="text-current">hub</span>
-      </span>
-    </Link>
+    <div aria-label="KasiAI Hub" style={{ width: size, height: size }} className="shrink-0 select-none">
+      <svg viewBox="0 0 64 64" width={size} height={size} role="img" aria-hidden="true">
+        <defs>
+          <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stopColor="#43d787" />
+            <stop offset="100%" stopColor="#2aa86b" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="64" height="64" rx="14" fill="#0f1722" />
+        <path d="M18 17h6v30h-6zM24 33l12-16h7l-12 16 12 14h-7L24 33z" fill="url(#g)" />
+        <circle cx="46" cy="19" r="3" fill="#43d787" />
+      </svg>
+    </div>
   );
 }

@@ -1,16 +1,48 @@
 // src/components/MainHeader.tsx
 'use client';
+
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Logo from '@/components/Logo';
-import MobileNav from '@/components/MobileNav';
-import ScrollTop from '@/components/ScrollTop';
-import { NAV_LINKS } from '@/lib/nav';
+
+const LINKS = [
+  { href: '/', label: 'home' },
+  { href: '/programs', label: 'programs' },
+  { href: '/events', label: 'events' },
+  { href: '/blog', label: 'blog' },
+  { href: '/contact', label: 'contact' },
+];
 
 export default function MainHeader() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const headerRef = useRef<HTMLElement | null>(null);
+
+  // Keep --header-h exactly in sync with the real rendered height
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+
+    const setVar = () => {
+      const h = Math.ceil(el.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--header-h', `${h}px`);
+    };
+
+    setVar(); // initial
+    const ro = new ResizeObserver(setVar);
+    ro.observe(el);
+    window.addEventListener('load', setVar);
+    window.addEventListener('orientationchange', setVar);
+    window.addEventListener('resize', setVar);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('load', setVar);
+      window.removeEventListener('orientationchange', setVar);
+      window.removeEventListener('resize', setVar);
+    };
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -20,31 +52,36 @@ export default function MainHeader() {
   }, []);
 
   const overHero = pathname === '/' && !scrolled;
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/');
 
   return (
-    <>
-      <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all h-16 isolate ${
-          overHero ? 'bg-transparent' : 'glass'
-        }`}
-        data-agent-track="header"
-      >
-        <style>{`:root{--header-h:64px;}`}</style>
+    <header
+      ref={headerRef}
+      className={[
+        'fixed inset-x-0 top-0 z-[80] isolate backdrop-blur-md transition-colors',
+        'header-glass',
+        overHero ? 'over-hero' : 'is-scrolled',
+      ].join(' ')}
+      // do not force height here; let it size naturally and we measure it
+    >
+      <div className="container-x h-full">
+        <div className="flex min-h-[84px] items-center justify-between gap-6">
+          <Link href="/" aria-label="KasiAI Hub home" className="flex items-center shrink-0">
+            <Logo size={44} />
+          </Link>
 
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4">
-          <Logo />
-
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-4">
-            {NAV_LINKS.map(({ href, label }) => {
-              const active = pathname === href;
+          <nav className="hidden md:flex items-center gap-2" aria-label="Primary">
+            {LINKS.map(({ href, label }) => {
+              const active = isActive(href);
               return (
                 <Link
                   key={href}
                   href={href}
-                  className={`rounded-lg px-3 py-2 text-sm transition ${
-                    active ? 'font-semibold text-white' : 'text-white/80 hover:text-white'
-                  }`}
+                  className={[
+                    'rounded-md px-3 py-2 text-[15px] leading-none transition',
+                    active ? 'font-semibold text-white' : 'text-white/85 hover:text-white',
+                  ].join(' ')}
                   aria-current={active ? 'page' : undefined}
                 >
                   {label}
@@ -53,32 +90,23 @@ export default function MainHeader() {
             })}
           </nav>
 
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-3 shrink-0">
             <Link
               href="/ai-search"
-              className="rounded-lg px-3 py-2 text-sm border border-white/20 text-white/90 hover:bg-white/10"
-              data-agent-hook="open-ai-search"
+              className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm border border-white/20 text-white/90 hover:bg-white/10"
             >
               AI Search
             </Link>
             <Link
               href="/book"
-              className="rounded-lg px-4 py-2 text-sm text-black"
+              className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm text-black"
               style={{ background: 'var(--brand-primary)' }}
-              data-agent-hook="open-booking"
             >
               Book a Session
             </Link>
           </div>
-
-          {/* Mobile menu (now portal-based, identical across pages) */}
-          <MobileNav />
         </div>
-      </header>
-
-      {/* Back-to-top FAB */}
-      <ScrollTop />
-    </>
+      </div>
+    </header>
   );
 }

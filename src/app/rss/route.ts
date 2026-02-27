@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { posts } from '@/lib/blog-index';
+import { listPosts } from '@/data/posts';
 
 export async function GET() {
-  const items = posts().slice(0, 50);
+  const items = listPosts().slice(0, 50);
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"><channel>
   <title>Kasi AI Hub</title>

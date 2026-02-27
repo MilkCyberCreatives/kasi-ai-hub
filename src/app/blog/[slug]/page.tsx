@@ -1,17 +1,31 @@
 // src/app/blog/[slug]/page.tsx
-import 'server-only';
-import type { Metadata } from 'next';
-import Image from 'next/image';
-import { MDXRemote } from 'next-mdx-remote/rsc';
-import { getPostBySlug } from '@/data/posts'; // uses fs + gray-matter (server-only)
+import 'server-only'
+import type { Metadata } from 'next'
+import Image from 'next/image'
+import { notFound } from 'next/navigation'
+import { MDXRemote } from 'next-mdx-remote/rsc'
+import { getPostBySlug, getAllPostSlugs } from '@/data/posts'
 
-type Props = { params: { slug: string } };
+// Static + revalidate
+export const dynamic = 'force-static'
+export const revalidate = 60 * 60 // 1 hour
+
+type Props = { params: { slug: string } }
+
+export async function generateStaticParams() {
+  // Ensure posts are pre-rendered at build time
+  const slugs = getAllPostSlugs?.() ?? []
+  return slugs.map((slug: string) => ({ slug }))
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { data } = getPostBySlug(params.slug);
-  const title = `${data.title ?? params.slug} | Kasi AI Hub`;
-  const description = (data.excerpt as string) || '';
-  const url = `https://kasiaihub.com/blog/${params.slug}`;
+  const post = getPostBySlug(params.slug)
+  if (!post) return {}
+
+  const { data } = post
+  const title = `${(data.title as string) ?? params.slug} | Kasi AI Hub`
+  const description = (data.excerpt as string) || ''
+  const url = `https://kasiaihub.com/blog/${params.slug}`
 
   return {
     title,
@@ -21,45 +35,46 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url,
       type: 'article',
-      images: data.cover ? [{ url: data.cover, width: 1200, height: 630 }] : [],
+      images: data.cover ? [{ url: data.cover as string, width: 1200, height: 630 }] : [],
     },
     alternates: {
       canonical: (data.canonical as string) || url,
     },
-  };
+  }
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const { data: meta, content } = getPostBySlug(params.slug);
+  const post = getPostBySlug(params.slug)
+  if (!post) return notFound()
+
+  const { data: meta, content } = post
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
-    headline: meta.title ?? params.slug,
+    headline: (meta.title as string) ?? params.slug,
     image: meta.cover,
-    author: { '@type': 'Organization', name: 'Kasi AI Hub' },
+    author: { '@type': 'Person', name: (meta.author as string) || 'AI Admin' },
     datePublished: meta.date,
     publisher: {
       '@type': 'Organization',
       name: 'Kasi AI Hub',
-      logo: { '@type': 'ImageObject', url: '/logo.svg' },
+      logo: { '@type': 'ImageObject', url: 'https://kasiaihub.com/logo.svg' },
     },
     description: meta.excerpt,
     mainEntityOfPage: `https://kasiaihub.com/blog/${params.slug}`,
-  };
+  }
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-16">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
       <h1 className="text-3xl font-bold">{(meta.title as string) ?? params.slug}</h1>
-      {meta.date && (
-        <p className="text-neutral-500 mt-2">
-          {new Date(meta.date as string).toLocaleDateString()}
-        </p>
-      )}
+
+      <p className="text-neutral-500 mt-2">
+        {(meta.date && new Date(meta.date as string).toLocaleDateString()) || ''}
+        {meta.author ? ` • ${meta.author as string}` : ''}
+      </p>
 
       {meta.cover ? (
         <div className="mt-6">
@@ -75,9 +90,8 @@ export default async function BlogPostPage({ params }: Props) {
       ) : null}
 
       <article className="prose prose-invert max-w-none mt-8">
-        {/* ✅ Render compiled MDX, not a raw object */}
         <MDXRemote source={content} />
       </article>
     </main>
-  );
+  )
 }

@@ -1,174 +1,88 @@
-// src/components/MobileNav.tsx
+// src/components/MainHeader.tsx
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import Logo from '@/components/Logo';
+import MobileNav from '@/components/MobileNav';
+import ScrollTop from '@/components/ScrollTop';
 import { NAV_LINKS } from '@/lib/nav';
 
-const DRAWER_Z = 9999;
-
-export default function MobileNav() {
+export default function MainHeader() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const closeBtnRef = useRef<HTMLButtonElement | null>(null);
+  const [scrolled, setScrolled] = useState(false);
 
-  // Mount flag for portal (SSR-safe)
-  useEffect(() => setMounted(true), []);
-
-  // Close drawer whenever route changes (ensures consistency across pages)
   useEffect(() => {
-    if (open) setOpen(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-  // Lock page scroll when drawer is open (preserve original styles to avoid layout jumps)
-  useEffect(() => {
-    if (!mounted) return;
-    const body = document.body;
-    const prevOverflow = body.style.overflow;
-    const prevPaddingRight = body.style.paddingRight;
-
-    if (open) {
-      // prevent background scroll
-      body.style.overflow = 'hidden';
-
-      // avoid content shift when scrollbar disappears
-      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
-      if (scrollBarWidth > 0) {
-        body.style.paddingRight = `${scrollBarWidth}px`;
-      }
-
-      // focus the close button for accessibility
-      closeBtnRef.current?.focus();
-    } else {
-      body.style.overflow = prevOverflow || '';
-      body.style.paddingRight = prevPaddingRight || '';
-    }
-
-    return () => {
-      body.style.overflow = prevOverflow || '';
-      body.style.paddingRight = prevPaddingRight || '';
-    };
-  }, [open, mounted]);
-
-  // Close on Escape
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
-
-  const Drawer = (
-    <div
-      className="fixed inset-0 md:hidden"
-      style={{ zIndex: DRAWER_Z }}
-      aria-hidden={!open}
-    >
-      {/* Scrim */}
-      <button
-        aria-label="Close menu"
-        className="absolute inset-0 bg-black/60"
-        onClick={() => setOpen(false)}
-      />
-
-      {/* Panel */}
-      <div
-        className="absolute right-0 top-0 h-full w-[86%] max-w-xs bg-[#0a0f1a] border-l border-white/10 shadow-2xl outline-none"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Mobile navigation"
-      >
-        {/* Panel header */}
-        <div className="flex items-center justify-between px-5 h-16 border-b border-white/10">
-          <span className="font-bold text-xl text-white">
-            <span className="text-white">kasi</span>
-            <span className="text-[var(--brand-primary)]">AI</span>
-            <span className="text-white">hub</span>
-          </span>
-          <button
-            ref={closeBtnRef}
-            aria-label="Close"
-            className="rounded-lg p-2 text-white/90 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30"
-            onClick={() => setOpen(false)}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M18.3 5.71 12 12.01l-6.3-6.3-1.4 1.41 6.29 6.29-6.3 6.3 1.41 1.41 6.3-6.3 6.29 6.3 1.41-1.41-6.3-6.3 6.3-6.29z" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Nav links */}
-        <nav className="px-3 py-4">
-          <ul className="space-y-1">
-            {NAV_LINKS.map(({ href, label }) => {
-              // Mark active for exact + nested paths (e.g. /blog and /blog/slug)
-              const active =
-                pathname === href ||
-                (href !== '/' && pathname?.startsWith(href + '/'));
-
-              return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className={`block rounded-lg px-3 py-3 transition ${
-                      active
-                        ? 'text-white font-medium bg-white/10'
-                        : 'text-white/90 hover:bg-white/10'
-                    }`}
-                    onClick={() => setOpen(false)}
-                  >
-                    {label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-
-          {/* Actions */}
-          <div className="mt-4 grid gap-2 px-3">
-            <Link
-              href="/ai-search"
-              className="text-center rounded-lg px-4 py-2 border border-white/20 text-white hover:bg-white/10 transition"
-              onClick={() => setOpen(false)}
-            >
-              AI Search
-            </Link>
-            <Link
-              href="/book"
-              className="text-center rounded-lg px-4 py-2 text-black font-medium transition"
-              style={{ background: 'var(--brand-primary)' }}
-              onClick={() => setOpen(false)}
-            >
-              Book a Session
-            </Link>
-          </div>
-        </nav>
-      </div>
-    </div>
-  );
+  const overHero = pathname === '/' && !scrolled;
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/');
 
   return (
     <>
-      {/* Hamburger (mobile only) */}
-      <button
-        aria-label="Open menu"
-        className="md:hidden rounded-lg p-2 hover:bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/30"
-        onClick={() => setOpen(true)}
-        style={{ zIndex: DRAWER_Z }} // ensure above headers on all pages
+      <header
+        className={[
+          'fixed inset-x-0 top-0 z-[80] h-21 isolate backdrop-blur-md transition-colors',
+          'header-glass',
+          overHero ? 'over-hero' : 'is-scrolled',
+        ].join(' ')}
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
-        </svg>
-      </button>
+        {/* keep css var in sync */}
+        <style>{`:root{--header-h:84px} .h-21{height:84px}`}</style>
 
-      {/* Portal for consistent stacking across ALL pages */}
-      {mounted && open && createPortal(Drawer, document.body)}
+        <div className="container-x h-full">
+          <div className="flex h-full items-center justify-between gap-6">
+            <Link href="/" aria-label="KasiAI Hub home" className="flex items-center shrink-0">
+              <Logo size={44} />
+            </Link>
+
+            <nav className="hidden md:flex items-center gap-2" aria-label="Primary">
+              {NAV_LINKS.map(({ href, label }) => {
+                const active = isActive(href);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={[
+                      'rounded-md px-3 py-2 text-[15px] leading-none transition',
+                      active ? 'font-semibold text-white' : 'text-white/85 hover:text-white',
+                    ].join(' ')}
+                    aria-current={active ? 'page' : undefined}
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <div className="hidden md:flex items-center gap-3 shrink-0">
+              <Link
+                href="/ai-search"
+                className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm border border-white/20 text-white/90 hover:bg-white/10"
+              >
+                AI Search
+              </Link>
+              <Link
+                href="/book"
+                className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md px-4 text-sm text-black"
+                style={{ background: 'var(--brand-primary)' }}
+              >
+                Book a Session
+              </Link>
+            </div>
+
+            <MobileNav />
+          </div>
+        </div>
+      </header>
+
+      <ScrollTop />
     </>
   );
 }
