@@ -87,17 +87,39 @@ export default function Page() {
         <Hero />
       </section>
 
-      <ValueStrip />
-      <ServicesGrid />
-      <ProgramsTeaser />
-      <ProgramFinder />
-      <LeadCapture />
-      <HowItWorks />
-      <Testimonials />
-      <HomeFAQ />
-      <StatsStrip />
-      <ApplyBanner />
-      <FinalCTA />
+      <div className="reveal-section reveal-d1">
+        <ValueStrip />
+      </div>
+      <div className="reveal-section reveal-d2">
+        <ServicesGrid />
+      </div>
+      <div className="reveal-section reveal-d3">
+        <ProgramsTeaser />
+      </div>
+      <div className="reveal-section reveal-d4">
+        <ProgramFinder />
+      </div>
+      <div className="reveal-section reveal-d5">
+        <LeadCapture />
+      </div>
+      <div className="reveal-section reveal-d6">
+        <HowItWorks />
+      </div>
+      <div className="reveal-section reveal-d7">
+        <Testimonials />
+      </div>
+      <div className="reveal-section reveal-d8">
+        <HomeFAQ />
+      </div>
+      <div className="reveal-section reveal-d9">
+        <StatsStrip />
+      </div>
+      <div className="reveal-section reveal-d10">
+        <ApplyBanner />
+      </div>
+      <div className="reveal-section reveal-d10">
+        <FinalCTA />
+      </div>
     </main>
   );
 }

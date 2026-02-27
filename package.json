@@ -9,6 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit --incremental false",
+    "smoke": "node scripts/smoke.mjs",
+    "smoke:prod": "node scripts/smoke.mjs --base=https://kasi-ai-hub.vercel.app --skip-server",
     "postbuild": "next-sitemap"
   },
   "dependencies": {

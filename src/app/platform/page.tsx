@@ -67,7 +67,8 @@ export default function PlatformPage() {
             <Link
               key={feature.href}
               href={feature.href}
-              className="glass group rounded-2xl border border-white/10 p-6 transition hover:border-emerald-300/40"
+              className="glass reveal-section group rounded-2xl border border-white/10 p-6 transition hover:border-emerald-300/40"
+              style={{ animationDelay: `${80 + index * 45}ms` }}
             >
               <div className="flex items-center justify-between">
                 <p className="text-xs uppercase tracking-[0.2em] text-white/60">Feature {index + 1}</p>
