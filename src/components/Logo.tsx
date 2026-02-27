@@ -23,7 +23,10 @@ export default function Logo({ size = 30, className = '' }: LogoProps) {
   }
 
   return (
-    <span className={`inline-flex items-center rounded-md bg-black/30 px-1.5 py-1 ${className}`}>
+    <span
+      className={`inline-flex items-center rounded-md bg-black/30 px-1.5 py-1 ${className}`}
+      style={{ minWidth: `${width + 12}px` }}
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/logo.svg"
@@ -33,7 +36,8 @@ export default function Logo({ size = 30, className = '' }: LogoProps) {
         loading="eager"
         decoding="async"
         onError={() => setFailed(true)}
-        className="block h-auto w-auto select-none"
+        className="block select-none"
+        style={{ width: `${width}px`, height: `${size}px`, maxWidth: 'none' }}
       />
     </span>
   );
