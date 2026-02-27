@@ -16,18 +16,15 @@ export default function BreadcrumbHero({
 }: Props) {
   return (
     <section
-      className="relative flex items-center justify-center text-center"
+      className="relative flex min-h-[220px] items-center justify-center px-4 py-10 text-center md:min-h-[240px] md:py-12"
       style={{
         backgroundImage: `url(${bgImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        // add padding top so it never sits under the fixed header
-        paddingTop: 'calc(var(--header-h, 64px) + 12px)',
-        minHeight: '220px',
       }}
     >
       <div className="absolute inset-0 bg-black/60" />
-      <div className="relative z-10 px-4 w-full">
+      <div className="relative z-10 w-full">
         <h1 className="text-[clamp(22px,4.8vw,40px)] font-bold text-white">{title}</h1>
         {subtitle && (
           <p className="mt-2 text-white/85 text-[clamp(13px,2.6vw,18px)] max-w-3xl mx-auto">{subtitle}</p>
