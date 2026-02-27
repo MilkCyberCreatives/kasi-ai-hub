@@ -12,7 +12,13 @@ type Result = {
   type?: 'Resource' | 'Program' | 'Blog';
 };
 
-// optional client tracker (uses your /api/track route if present)
+type SearchResponse = {
+  ok?: boolean;
+  answer?: string;
+  results?: Result[];
+  automatedBy?: string;
+};
+
 async function track(name: string, data: Record<string, unknown> = {}) {
   try {
     await fetch('/api/track', {
@@ -26,102 +32,111 @@ async function track(name: string, data: Record<string, unknown> = {}) {
   }
 }
 
+function buildFallbackResults(question: string): Result[] {
+  const lower = question.toLowerCase();
+  const results: Result[] = [];
+
+  if (lower.includes('post') || lower.includes('social') || lower.includes('content')) {
+    results.push({
+      title: 'AI in Marketing',
+      href: '/blog/ai-in-marketing',
+      snippet: 'Practical marketing workflows to accelerate content output.',
+      type: 'Blog',
+    });
+  }
+  if (lower.includes('report') || lower.includes('ops') || lower.includes('operations')) {
+    results.push({
+      title: 'AI in Operations',
+      href: '/blog/ai-in-operations',
+      snippet: 'Turn recurring reports into repeatable automated workflows.',
+      type: 'Blog',
+    });
+  }
+  if (lower.includes('sales') || lower.includes('reply') || lower.includes('customer')) {
+    results.push({
+      title: 'AI in Sales',
+      href: '/blog/ai-in-sales',
+      snippet: 'Improve response speed and lead handling with AI.',
+      type: 'Blog',
+    });
+  }
+
+  results.push(
+    {
+      title: 'Resources Library',
+      href: '/resources',
+      snippet: 'Curated tools, templates, and practical playbooks.',
+      type: 'Resource',
+    },
+    {
+      title: 'AI Foundations (3 Hours)',
+      href: '/programs',
+      snippet: 'Hands-on session to build your first workflow.',
+      type: 'Program',
+    },
+    {
+      title: 'Team Workshop (1 Day)',
+      href: '/programs',
+      snippet: 'Custom team training with playbooks.',
+      type: 'Program',
+    }
+  );
+
+  const unique = new Map(results.map((item) => [item.href, item]));
+  return Array.from(unique.values()).slice(0, 5);
+}
+
 export default function AISearchPage() {
   const [q, setQ] = useState('');
   const [answer, setAnswer] = useState<string | null>(null);
   const [results, setResults] = useState<Result[]>([]);
+  const [automatedBy, setAutomatedBy] = useState<'llm' | 'rules' | null>(null);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
-    track('ai_search_page_view', {});
+    void track('ai_search_page_view', {});
   }, []);
 
-  async function ask(e?: React.FormEvent) {
+  async function ask(e?: React.FormEvent, directQuestion?: string) {
     e?.preventDefault();
-    const question = q.trim();
+    const question = (directQuestion ?? q).trim();
     if (!question) return;
+
     setLoading(true);
     setAnswer(null);
     setResults([]);
+    setAutomatedBy(null);
+
     try {
-      // Ask your AI stub
       const res = await fetch('/api/ai-search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question }),
       });
-      const data = await res.json();
-      setAnswer(data?.answer || 'Try rephrasing your question.');
+      const data = (await res.json()) as SearchResponse;
 
-      // Quick, local heuristic results (link to your content)
-      const lower = question.toLowerCase();
-      const r: Result[] = [];
+      if (!res.ok || !data?.ok) throw new Error('AI search failed');
 
-      if (lower.includes('post') || lower.includes('social')) {
-        r.push({
-          title: 'AI Post Generator – 30 posts in 3 hours',
-          href: '/resources#ai-post-generator',
-          snippet: 'Batch-create 30 social posts in one afternoon.',
-          type: 'Resource',
-        });
-      }
-      if (lower.includes('report')) {
-        r.push({
-          title: 'Weekly Ops Report – Template',
-          href: '/resources#weekly-ops-report-template',
-          snippet: 'Turn raw notes into tidy weekly updates.',
-          type: 'Resource',
-        });
-      }
-      if (lower.includes('website')) {
-        r.push({
-          title: 'One-Page Website Outline (SEO-ready)',
-          href: '/resources#one-page-website-outline',
-          snippet: 'Launch a fast, SEO-ready page quickly.',
-          type: 'Resource',
-        });
-      }
-      if (lower.includes('fund') || lower.includes('proposal')) {
-        r.push({
-          title: 'Funding Research with AI',
-          href: '/resources#funding-research-with-ai',
-          snippet: 'Find opportunities and draft proposals.',
-          type: 'Resource',
-        });
-      }
-      // Always include programs as next steps
-      r.push(
-        {
-          title: 'AI Foundations (3 Hours)',
-          href: '/programs',
-          snippet: 'Hands-on session to build your first workflow.',
-          type: 'Program',
-        },
-        {
-          title: 'Team Workshop (1 Day)',
-          href: '/programs',
-          snippet: 'Custom team training with playbooks.',
-          type: 'Program',
-        }
-      );
-
-      setResults(r);
-      track('ai_search_query', { q: question });
+      setAnswer(data.answer || 'Try rephrasing your question.');
+      setResults(Array.isArray(data.results) && data.results.length ? data.results : buildFallbackResults(question));
+      setAutomatedBy(data.automatedBy === 'llm' ? 'llm' : 'rules');
+      void track('ai_search_query', { q: question, automatedBy: data.automatedBy || 'rules' });
     } catch {
       setAnswer('Something went wrong. Please try again.');
+      setResults(buildFallbackResults(question));
+      setAutomatedBy('rules');
     } finally {
       setLoading(false);
     }
   }
 
-  function applySuggestion(s: string) {
-    setQ(s);
-    setTimeout(() => ask(), 0);
+  function applySuggestion(value: string) {
+    setQ(value);
+    void ask(undefined, value);
   }
 
-  // JSON-LD: Sitelinks SearchBox + Breadcrumbs
   const searchLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -132,6 +147,7 @@ export default function AISearchPage() {
       'query-input': 'required name=search_term_string',
     },
   };
+
   const breadcrumbLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -146,7 +162,6 @@ export default function AISearchPage() {
       <Script id="ld-searchbox" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(searchLd) }} />
       <Script id="ld-breadcrumbs-ai" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
 
-      {/* Shared breadcrumb hero (same background as other pages) */}
       <BreadcrumbHero
         title="AI Search"
         subtitle="Ask a question and get the best guide, template, or program to achieve it."
@@ -154,14 +169,13 @@ export default function AISearchPage() {
       />
 
       <section className="mx-auto max-w-3xl px-4 py-12">
-        {/* Search form */}
         <form onSubmit={ask} className="glass rounded-2xl p-5 md:p-6">
           <div className="flex flex-col md:flex-row gap-3">
             <input
               ref={inputRef}
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="e.g. ‘create 30 social posts’, ‘weekly report template’, ‘automate replies’"
+              placeholder="e.g. create 30 social posts, weekly report template, automate replies"
               className="flex-1 rounded-lg bg-white/5 border border-white/15 px-3 py-3 text-white placeholder:text-white/50 focus:outline-none focus:border-[var(--brand-primary)]"
             />
             <button
@@ -170,11 +184,10 @@ export default function AISearchPage() {
               className="rounded-xl px-5 py-3 text-black font-medium disabled:opacity-60"
               style={{ background: 'var(--brand-primary)' }}
             >
-              {loading ? 'Thinking…' : 'Ask'}
+              {loading ? 'Thinking...' : 'Ask'}
             </button>
           </div>
 
-          {/* Suggestions */}
           <div className="mt-4 flex flex-wrap gap-2">
             {[
               'template for weekly report',
@@ -182,44 +195,43 @@ export default function AISearchPage() {
               'draft funding proposal',
               'automate service replies',
               'one-page website outline',
-            ].map((s) => (
+            ].map((suggestion) => (
               <button
-                key={s}
+                key={suggestion}
                 type="button"
-                onClick={() => applySuggestion(s)}
+                onClick={() => applySuggestion(suggestion)}
                 className="rounded-full border border-white/20 px-3 py-1 text-xs text-white/80 hover:bg-white/10"
               >
-                {s}
+                {suggestion}
               </button>
             ))}
           </div>
         </form>
 
-        {/* Answer */}
         {answer && (
           <div className="mt-6 glass rounded-2xl p-6">
             <h3 className="text-white font-semibold">Suggested plan</h3>
             <p className="mt-2 text-white/85">{answer}</p>
+            {automatedBy && <p className="mt-2 text-xs text-white/60">Engine: {automatedBy === 'llm' ? 'live-ai' : 'smart-rules'}</p>}
           </div>
         )}
 
-        {/* Results */}
         {results.length > 0 && (
           <div className="mt-6 grid gap-4">
-            {results.map((r, i) => (
+            {results.map((item, index) => (
               <a
-                key={i}
-                href={r.href}
+                key={`${item.href}-${index}`}
+                href={item.href}
                 className="glass rounded-2xl p-4 hover:bg-white/10 transition-colors"
-                onClick={() => track('ai_search_click', { q, href: r.href, pos: i })}
+                onClick={() => void track('ai_search_click', { q, href: item.href, pos: index })}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-white font-semibold">{r.title}</div>
-                    {r.snippet ? <div className="text-white/75 text-sm mt-1">{r.snippet}</div> : null}
+                    <div className="text-white font-semibold">{item.title}</div>
+                    {item.snippet ? <div className="text-white/75 text-sm mt-1">{item.snippet}</div> : null}
                   </div>
-                  {r.type ? (
-                    <span className="text-xs text-white/70 border border-white/20 rounded-full px-2 py-0.5">{r.type}</span>
+                  {item.type ? (
+                    <span className="text-xs text-white/70 border border-white/20 rounded-full px-2 py-0.5">{item.type}</span>
                   ) : null}
                 </div>
               </a>
@@ -227,7 +239,6 @@ export default function AISearchPage() {
           </div>
         )}
 
-        {/* Help strip */}
         <div className="mt-10 glass rounded-2xl p-6 text-center">
           <p className="text-white/80">Not sure where to start?</p>
           <div className="mt-3 flex items-center justify-center gap-3">
@@ -238,10 +249,7 @@ export default function AISearchPage() {
             >
               See Programs
             </a>
-            <a
-              href="/book"
-              className="rounded-xl px-5 py-3 text-sm border border-white/20 text-white hover:bg-white/10"
-            >
+            <a href="/book" className="rounded-xl px-5 py-3 text-sm border border-white/20 text-white hover:bg-white/10">
               Book a Session
             </a>
           </div>

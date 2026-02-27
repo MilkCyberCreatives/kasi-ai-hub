@@ -13,37 +13,43 @@ type Payload = {
   goal: string;
   location?: string;
   when?: string;
-  source?: string; // community-page, hero, etc.
+  source?: string;
   utm?: Record<string, string>;
+};
+
+type LeadResponse = {
+  ok?: boolean;
+  error?: string;
+  message?: string;
+  nextStep?: string;
+  priority?: 'high' | 'medium' | 'low';
 };
 
 export default function BookingForm() {
   const [status, setStatus] = useState<Status>('idle');
   const [message, setMessage] = useState<string | null>(null);
 
-  // Capture UTM from querystring
   const utm = useMemo(() => {
     if (typeof window === 'undefined') return {};
     const p = new URLSearchParams(window.location.search);
-    const keys = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','source','location','event'];
+    const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'source', 'location', 'event'];
     const out: Record<string, string> = {};
-    keys.forEach(k => { const v = p.get(k); if (v) out[k] = v; });
+    keys.forEach((key) => {
+      const value = p.get(key);
+      if (value) out[key] = value;
+    });
     return out;
   }, []);
 
-  // Prefill session/location if passed in query
-  const [session, setSession] = useState<'3-hour' | 'team-workshop' | 'clinic'>(
-    (utm['session'] as any) || '3-hour'
-  );
+  const [session, setSession] = useState<'3-hour' | 'team-workshop' | 'clinic'>((utm.session as '3-hour' | 'team-workshop' | 'clinic') || '3-hour');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [goal, setGoal] = useState('');
-  const [location, setLocation] = useState(utm['location'] || '');
+  const [location, setLocation] = useState(utm.location || '');
   const [when, setWhen] = useState('');
 
   useEffect(() => {
-    // fire a view event
     track('book_page_view', { utm });
   }, [utm]);
 
@@ -60,19 +66,19 @@ export default function BookingForm() {
       goal,
       location,
       when,
-      source: utm['source'] || 'book-page',
-      utm
+      source: utm.source || 'book-page',
+      utm,
     };
 
     try {
-      // 1) Save lead
-      await fetch('/api/lead', {
+      const leadRes = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+      const leadJson = (await leadRes.json().catch(() => ({}))) as LeadResponse;
+      if (!leadRes.ok || !leadJson?.ok) throw new Error(leadJson?.error || 'Failed to submit');
 
-      // 2) Track conversions (all optional and safe if not present)
       track('book_submit', payload);
       if (typeof window !== 'undefined' && (window as any).dataLayer) {
         (window as any).dataLayer.push({ event: 'book_submit', book_payload: payload });
@@ -85,9 +91,13 @@ export default function BookingForm() {
       }
 
       setStatus('success');
-      setMessage('Thanks! We’ve received your request. We’ll confirm your time and venue shortly by email/WhatsApp.');
-      // Optional: reset form
-      setName(''); setEmail(''); setWhatsapp(''); setGoal(''); setLocation(''); setWhen('');
+      setMessage(leadJson.message || "Thanks! We've received your request. We'll confirm your time and venue shortly by email/WhatsApp.");
+      setName('');
+      setEmail('');
+      setWhatsapp('');
+      setGoal('');
+      setLocation('');
+      setWhen('');
     } catch {
       setStatus('error');
       setMessage('Something went wrong. Please try again or WhatsApp us.');
@@ -97,20 +107,11 @@ export default function BookingForm() {
   return (
     <form onSubmit={onSubmit} className="glass rounded-2xl p-6 md:p-8">
       <h2 className="text-white font-semibold text-xl">Tell us what you want to build</h2>
-      <p className="mt-1 text-white/80 text-sm">
-        We’ll reach out with available times closest to you.
-      </p>
+      <p className="mt-1 text-white/80 text-sm">We&apos;ll reach out with available times closest to you.</p>
 
-      {/* Session type */}
       <div className="mt-5 grid gap-3 md:grid-cols-3">
         <label className="rounded-xl border border-white/15 bg-white/5 p-4 cursor-pointer">
-          <input
-            type="radio"
-            name="session"
-            className="mr-2 align-middle"
-            checked={session === '3-hour'}
-            onChange={()=>setSession('3-hour')}
-          />
+          <input type="radio" name="session" className="mr-2 align-middle" checked={session === '3-hour'} onChange={() => setSession('3-hour')} />
           <span className="text-white/90 font-medium">3-Hour Build</span>
           <div className="text-white/70 text-xs">R1299</div>
         </label>
@@ -120,31 +121,24 @@ export default function BookingForm() {
             name="session"
             className="mr-2 align-middle"
             checked={session === 'team-workshop'}
-            onChange={()=>setSession('team-workshop')}
+            onChange={() => setSession('team-workshop')}
           />
           <span className="text-white/90 font-medium">Team Workshop</span>
           <div className="text-white/70 text-xs">Custom</div>
         </label>
         <label className="rounded-xl border border-white/15 bg-white/5 p-4 cursor-pointer">
-          <input
-            type="radio"
-            name="session"
-            className="mr-2 align-middle"
-            checked={session === 'clinic'}
-            onChange={()=>setSession('clinic')}
-          />
+          <input type="radio" name="session" className="mr-2 align-middle" checked={session === 'clinic'} onChange={() => setSession('clinic')} />
           <span className="text-white/90 font-medium">Monthly Clinic</span>
           <div className="text-white/70 text-xs">Free</div>
         </label>
       </div>
 
-      {/* Contact details */}
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         <div className="grid gap-3">
           <input
             required
             value={name}
-            onChange={(e)=>setName(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
             placeholder="Your name"
             className="rounded-lg bg-white/5 border border-white/15 px-3 py-3 text-white placeholder:text-white/50 focus:outline-none focus:border-[var(--brand-primary)]"
           />
@@ -152,13 +146,13 @@ export default function BookingForm() {
             required
             type="email"
             value={email}
-            onChange={(e)=>setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
             className="rounded-lg bg-white/5 border border-white/15 px-3 py-3 text-white placeholder:text-white/50 focus:outline-none focus:border-[var(--brand-primary)]"
           />
           <input
             value={whatsapp}
-            onChange={(e)=>setWhatsapp(e.target.value)}
+            onChange={(e) => setWhatsapp(e.target.value)}
             placeholder="WhatsApp (optional)"
             className="rounded-lg bg-white/5 border border-white/15 px-3 py-3 text-white placeholder:text-white/50 focus:outline-none focus:border-[var(--brand-primary)]"
           />
@@ -167,24 +161,26 @@ export default function BookingForm() {
         <div className="grid gap-3">
           <select
             value={location}
-            onChange={(e)=>setLocation(e.target.value)}
+            onChange={(e) => setLocation(e.target.value)}
             className="rounded-lg bg-white/5 border border-white/15 px-3 py-3 text-white focus:outline-none focus:border-[var(--brand-primary)]"
           >
             <option value="">Preferred location</option>
-            {['Johannesburg Central','Sandton','Pretoria','Durban','Cape Town','Soweto','Alexandra','Mamelodi','Your Community'].map(l => (
-              <option key={l} value={l}>{l}</option>
+            {['Johannesburg Central', 'Sandton', 'Pretoria', 'Durban', 'Cape Town', 'Soweto', 'Alexandra', 'Mamelodi', 'Your Community'].map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
             ))}
           </select>
           <input
             value={when}
-            onChange={(e)=>setWhen(e.target.value)}
+            onChange={(e) => setWhen(e.target.value)}
             placeholder="Ideal date/time (or day of week)"
             className="rounded-lg bg-white/5 border border-white/15 px-3 py-3 text-white placeholder:text-white/50 focus:outline-none focus:border-[var(--brand-primary)]"
           />
           <textarea
             required
             value={goal}
-            onChange={(e)=>setGoal(e.target.value)}
+            onChange={(e) => setGoal(e.target.value)}
             placeholder="What do you want to learn or build? (e.g., batch social posts, automate replies, weekly report)"
             rows={3}
             className="rounded-lg bg-white/5 border border-white/15 px-3 py-3 text-white placeholder:text-white/50 focus:outline-none focus:border-[var(--brand-primary)]"
@@ -192,7 +188,6 @@ export default function BookingForm() {
         </div>
       </div>
 
-      {/* Submit */}
       <div className="mt-6 flex items-center gap-3">
         <button
           type="submit"
@@ -200,18 +195,19 @@ export default function BookingForm() {
           className="rounded-xl px-6 py-3 text-black font-medium disabled:opacity-60"
           style={{ background: 'var(--brand-primary)' }}
         >
-          {status === 'submitting' ? 'Sending…' : 'Request Booking'}
+          {status === 'submitting' ? 'Sending...' : 'Request Booking'}
         </button>
         <span className="text-xs text-white/60">We typically reply within a few hours.</span>
       </div>
 
-      {/* Status */}
       {message && (
         <div
           className={`mt-4 rounded-xl border p-4 text-sm ${
-            status === 'success' ? 'border-emerald-400/40 text-emerald-200 bg-emerald-400/10' :
-            status === 'error' ? 'border-red-400/40 text-red-200 bg-red-400/10' :
-            'border-white/20 text-white/80 bg-white/5'
+            status === 'success'
+              ? 'border-emerald-400/40 text-emerald-200 bg-emerald-400/10'
+              : status === 'error'
+                ? 'border-red-400/40 text-red-200 bg-red-400/10'
+                : 'border-white/20 text-white/80 bg-white/5'
           }`}
         >
           {message}
@@ -221,8 +217,7 @@ export default function BookingForm() {
   );
 }
 
-// tiny helper — safe no-op if /api/track isn’t present
-async function track(name: string, data: Record<string, any>) {
+async function track(name: string, data: Record<string, unknown>) {
   try {
     await fetch('/api/track', {
       method: 'POST',
@@ -230,5 +225,7 @@ async function track(name: string, data: Record<string, any>) {
       body: JSON.stringify({ name, ...data }),
       keepalive: true,
     });
-  } catch {}
+  } catch {
+    // ignore
+  }
 }

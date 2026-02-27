@@ -1,26 +1,22 @@
-// src/app/api/ai-search/route.ts
 import { NextResponse } from 'next/server';
+import { getAiSearchAnswer } from '@/lib/ai-automation';
 
-// Stubbed “AI” search. Upgrade later to call your LLM/RAG.
-// For now we do a tiny rules-based mapping so the UX feels smart.
+export const runtime = 'nodejs';
+
+type SearchRequest = { question?: string };
+
 export async function POST(req: Request) {
-  const { question = '' } = await req.json().catch(() => ({ question: '' }));
-  const q = String(question).toLowerCase();
+  const body = (await req.json().catch(() => ({}))) as SearchRequest;
+  const question = String(body.question || '').trim();
 
-  let answer =
-    "I’d start with the AI Foundations guide and the Weekly Ops Report template. They’re fast wins for most teams.";
-
-  if (q.includes('post') || q.includes('social')) {
-    answer = "Use “AI Post Generator – 30 posts in 3 hours”. It includes prompt patterns and batching tips.";
-  } else if (q.includes('report')) {
-    answer = "Try the “Weekly Ops Report – Template”. It turns raw notes into tidy summaries with next steps.";
-  } else if (q.includes('website')) {
-    answer = "Grab “One-Page Website Outline (SEO-ready)”. It’s a quick structure with keyword hints.";
-  } else if (q.includes('fund')) {
-    answer = "See “Funding Research with AI”. It shows sources to check and a starter proposal outline.";
-  } else if (q.includes('intake') || q.includes('reply')) {
-    answer = "Check “Service Intake → Reply Workflow”. It maps intake → summary → suggested reply.";
+  if (!question) {
+    return NextResponse.json(
+      { ok: false, error: 'Please provide a question.' },
+      { status: 400, headers: { 'Cache-Control': 'no-store' } }
+    );
   }
 
-  return NextResponse.json({ answer });
+  const result = await getAiSearchAnswer(question);
+  return NextResponse.json({ ok: true, ...result }, { headers: { 'Cache-Control': 'no-store' } });
 }
+
