@@ -1,37 +1,7 @@
 // src/components/ServicesGrid.tsx
 import Link from 'next/link';
 import Image from 'next/image';
-
-const SERVICES = [
-  {
-    slug: '/ai-websites', // you can change the route later
-    title: 'Website Development',
-    blurb:
-      'Fast, conversion-focused sites with AI content workflows built-in.',
-    img: '/images/home/services/website.png',
-  },
-  {
-    slug: '/ai-social-media-marketing-training',
-    title: 'Social Media Marketing',
-    blurb:
-      'Plan, generate, and schedule 30 posts in 3 hours with AI templates.',
-    img: '/images/home/services/marketing.png',
-  },
-  {
-    slug: '/ai-business-automation-training',
-    title: 'Business Automation',
-    blurb:
-      'Automate intake, replies, and weekly reports. Checklists + approvals.',
-    img: '/images/home/services/automation.png',
-  },
-  {
-    slug: '/ai-market-research-funding-training',
-    title: 'Market Research & Funding',
-    blurb:
-      'Use AI to research markets, draft proposals, and prep funding decks.',
-    img: '/images/home/services/research.png',
-  },
-];
+import { SERVICES } from '@/data/services';
 
 export default function ServicesGrid() {
   return (
