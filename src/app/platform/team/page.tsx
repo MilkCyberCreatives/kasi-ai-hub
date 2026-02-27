@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ModuleHeader from '@/components/platform/ModuleHeader';
 
 type TeamMember = {
@@ -15,8 +15,34 @@ const INITIAL_MEMBERS: TeamMember[] = [
   { id: '2', name: 'Automation Coach', email: 'coach@kasiaihub.com', role: 'Editor' },
 ];
 
+const STORAGE_KEY = 'kasi.platform.team.v1';
+
+function createMemberId() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return `member-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
 export default function TeamPage() {
   const [members, setMembers] = useState(INITIAL_MEMBERS);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as TeamMember[];
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        setMembers(parsed);
+      }
+    } catch {
+      // ignore malformed storage
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(members));
+  }, [members]);
 
   function addMember(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,7 +52,7 @@ export default function TeamPage() {
     const role = String(form.get('role') || 'Viewer') as TeamMember['role'];
     if (!name || !email) return;
 
-    setMembers((prev) => [...prev, { id: crypto.randomUUID(), name, email, role }]);
+    setMembers((prev) => [...prev, { id: createMemberId(), name, email, role }]);
     e.currentTarget.reset();
   }
 

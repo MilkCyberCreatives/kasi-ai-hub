@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ModuleHeader from '@/components/platform/ModuleHeader';
 
 type SuccessResponse = {
@@ -12,9 +12,29 @@ type SuccessResponse = {
   nextReviewInDays?: number;
 };
 
+const STORAGE_KEY = 'kasi.platform.success.v1';
+
 export default function SuccessTrackerPage() {
   const [result, setResult] = useState<SuccessResponse | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as SuccessResponse;
+      if (parsed && typeof parsed === 'object') {
+        setResult(parsed);
+      }
+    } catch {
+      // ignore bad data
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!result) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(result));
+  }, [result]);
 
   async function analyze(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

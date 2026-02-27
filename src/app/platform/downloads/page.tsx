@@ -75,6 +75,11 @@ export default function DownloadsPage() {
               <p className="mt-2 text-xs text-white/55">Size: {item.size}</p>
             </a>
           ))}
+          {filtered.length === 0 && (
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
+              No assets match your current filter. Try another keyword or category.
+            </div>
+          )}
         </div>
       </section>
     </main>

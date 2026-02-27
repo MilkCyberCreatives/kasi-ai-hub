@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ModuleHeader from '@/components/platform/ModuleHeader';
 import { PLATFORM_FEATURES } from '@/lib/platform-features';
 
@@ -18,10 +18,30 @@ const START_METRICS: DailyMetric[] = [
   { label: 'Response SLA', value: 92, suffix: '%' },
 ];
 
+const STORAGE_KEY = 'kasi.platform.dashboard.v1';
+
 export default function PlatformDashboardPage() {
   const [metrics, setMetrics] = useState(START_METRICS);
   const [syncing, setSyncing] = useState(false);
   const [syncedAt, setSyncedAt] = useState<string>('Not synced yet');
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as { metrics?: DailyMetric[]; syncedAt?: string };
+      if (Array.isArray(saved.metrics) && saved.metrics.length === START_METRICS.length) {
+        setMetrics(saved.metrics);
+      }
+      if (saved.syncedAt) setSyncedAt(saved.syncedAt);
+    } catch {
+      // ignore invalid local cache
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ metrics, syncedAt }));
+  }, [metrics, syncedAt]);
 
   const momentum = useMemo(() => {
     const score = Math.round(metrics.reduce((acc, item) => acc + item.value, 0) / metrics.length);

@@ -16,6 +16,7 @@ type CopilotResponse = {
 export default function AICopilotPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CopilotResponse | null>(null);
+  const [copied, setCopied] = useState(false);
 
   async function runCopilot(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -48,6 +49,18 @@ export default function AICopilotPage() {
       });
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function copyPromptPack() {
+    const prompts = (result?.prompts || []).join('\n\n');
+    if (!prompts) return;
+    try {
+      await navigator.clipboard.writeText(prompts);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setCopied(false);
     }
   }
 
@@ -120,7 +133,16 @@ export default function AICopilotPage() {
 
               {(result.prompts || []).length > 0 && (
                 <div className="mt-5 rounded-xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-sm font-semibold text-white">Prompt pack</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold text-white">Prompt pack</p>
+                    <button
+                      type="button"
+                      onClick={copyPromptPack}
+                      className="rounded-lg border border-white/20 px-2 py-1 text-xs text-white/80 hover:bg-white/10"
+                    >
+                      {copied ? 'Copied' : 'Copy'}
+                    </button>
+                  </div>
                   <ul className="mt-2 space-y-2">
                     {(result.prompts || []).map((prompt) => (
                       <li key={prompt} className="text-sm text-white/75">
