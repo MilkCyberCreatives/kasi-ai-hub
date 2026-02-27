@@ -62,7 +62,7 @@ export default function MainHeader() {
         <div className="container-x h-full">
           <div className="flex min-h-[84px] items-center justify-between gap-6">
             <Link href="/" aria-label="KasiAI Hub home" className="flex items-center shrink-0">
-              <Logo size={20} priority />
+              <Logo size={26} priority />
             </Link>
 
             <nav className="hidden md:flex items-center gap-2" aria-label="Primary">
