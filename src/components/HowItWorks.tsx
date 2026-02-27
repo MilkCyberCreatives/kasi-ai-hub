@@ -1,6 +1,4 @@
 // src/components/HowItWorks.tsx
-'use client';
-
 const STEPS = [
   {
     n: '01',

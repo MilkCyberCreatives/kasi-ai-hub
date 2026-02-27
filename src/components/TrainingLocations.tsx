@@ -1,6 +1,4 @@
 // src/components/TrainingLocations.tsx
-'use client';
-
 type Location = {
   title: string;
   subtitle: string;

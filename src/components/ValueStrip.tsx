@@ -1,5 +1,5 @@
 // src/components/ValueStrip.tsx
-'use client';
+import Image from 'next/image';
 
 export default function ValueStrip() {
   return (
@@ -51,19 +51,28 @@ export default function ValueStrip() {
           {/* Partner logos */}
           {/* NOTE: Only mobile sizing/spacing tweaks. Keeps look, just constrains height & wraps nicely. */}
           <div className="w-full md:w-auto flex items-center justify-center flex-wrap gap-x-6 gap-y-3 sm:gap-x-10">
-            <img
+            <Image
               src="/images/home/partners/partner-1.png"
               alt="Milkcyber"
+              width={200}
+              height={72}
+              sizes="(max-width: 768px) 120px, 160px"
               className="h-7 sm:h-8 md:h-9 w-auto object-contain brightness-0 invert opacity-90 flex-shrink-0"
             />
-            <img
+            <Image
               src="/images/home/partners/partner-2.png"
               alt="Baya"
+              width={200}
+              height={72}
+              sizes="(max-width: 768px) 120px, 160px"
               className="h-7 sm:h-8 md:h-9 w-auto object-contain brightness-0 invert opacity-90 flex-shrink-0"
             />
-            <img
+            <Image
               src="/images/home/partners/partner-3.png"
               alt="Lethela"
+              width={200}
+              height={72}
+              sizes="(max-width: 768px) 120px, 160px"
               className="h-7 sm:h-8 md:h-9 w-auto object-contain brightness-0 invert opacity-90 flex-shrink-0"
             />
           </div>

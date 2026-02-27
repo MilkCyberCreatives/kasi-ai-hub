@@ -1,5 +1,5 @@
 // src/components/ResourceCard.tsx
-'use client';
+import Image from 'next/image';
 
 export type Resource = {
   id: string;
@@ -18,7 +18,14 @@ export default function ResourceCard({ r }: { r: Resource }) {
   return (
     <article className="glass rounded-2xl overflow-hidden flex flex-col">
       {r.image ? (
-        <img src={r.image} alt={r.title} className="h-40 w-full object-cover" />
+        <Image
+          src={r.image}
+          alt={r.title}
+          width={960}
+          height={320}
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="h-40 w-full object-cover"
+        />
       ) : (
         <div className="h-40 w-full bg-white/5" />
       )}

@@ -1,17 +1,21 @@
 // src/components/Hero.tsx
-'use client';
-
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Hero() {
   return (
     <section className="relative min-h-[92vh] w-full overflow-hidden">
-      {/* Full-bleed background image from /public */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/home/hero.jpg')" }}
-        aria-hidden="true"
-      />
+      {/* Full-bleed optimized hero image */}
+      <div className="absolute inset-0" aria-hidden="true">
+        <Image
+          src="/images/home/hero.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+      </div>
       {/* Darker overlay */}
       <div className="absolute inset-0 bg-black/75" />
 

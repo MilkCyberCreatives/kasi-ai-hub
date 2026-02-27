@@ -1,6 +1,7 @@
 // src/app/programs/page.tsx
 import Script from 'next/script';
 import Link from 'next/link';
+import Image from 'next/image';
 import BreadcrumbHero from '@/components/BreadcrumbHero';
 
 export const metadata = {
@@ -97,11 +98,13 @@ export default function ProgramsPage() {
         <section className="grid gap-6 md:grid-cols-3">
           {/* Foundations */}
           <article className="glass rounded-2xl overflow-hidden">
-            <img
+            <Image
               src="/images/programs/foundations.jpg"
               alt="AI Foundations session cover"
+              width={960}
+              height={440}
+              sizes="(max-width: 768px) 100vw, 33vw"
               className="h-44 w-full object-cover"
-              loading="lazy"
             />
             <div className="p-6">
               <h2 className="text-white font-semibold text-xl">AI Foundations (3 Hours)</h2>
@@ -124,11 +127,13 @@ export default function ProgramsPage() {
 
           {/* Team Workshop */}
           <article className="glass rounded-2xl overflow-hidden">
-            <img
+            <Image
               src="/images/programs/team.jpg"
               alt="Team Workshop session cover"
+              width={960}
+              height={440}
+              sizes="(max-width: 768px) 100vw, 33vw"
               className="h-44 w-full object-cover"
-              loading="lazy"
             />
             <div className="p-6">
               <h2 className="text-white font-semibold text-xl">Team Workshop (1 Day)</h2>
@@ -151,11 +156,13 @@ export default function ProgramsPage() {
 
           {/* Monthly Clinic */}
           <article className="glass rounded-2xl overflow-hidden">
-            <img
+            <Image
               src="/images/programs/clinic.jpg"
               alt="Monthly AI Clinic cover"
+              width={960}
+              height={440}
+              sizes="(max-width: 768px) 100vw, 33vw"
               className="h-44 w-full object-cover"
-              loading="lazy"
             />
             <div className="p-6">
               <h2 className="text-white font-semibold text-xl">Monthly AI Clinic</h2>

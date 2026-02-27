@@ -1,6 +1,4 @@
 // src/components/StatsStrip.tsx
-'use client';
-
 export default function StatsStrip() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-10">

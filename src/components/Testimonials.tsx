@@ -1,6 +1,8 @@
 // src/components/Testimonials.tsx
 'use client';
 
+import Image from 'next/image';
+
 const TESTIMONIALS = [
   {
     name: 'Thandi M.',
@@ -53,9 +55,12 @@ export default function Testimonials() {
               className="glass min-w-[300px] max-w-sm rounded-2xl p-5"
             >
               <div className="flex items-center gap-3">
-                <img
+                <Image
                   src={t.avatar}
                   alt={`${t.name} avatar`}
+                  width={40}
+                  height={40}
+                  sizes="40px"
                   className="h-10 w-10 rounded-full object-cover brightness-110"
                 />
                 <div>

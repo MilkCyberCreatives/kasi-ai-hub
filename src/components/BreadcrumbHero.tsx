@@ -1,6 +1,4 @@
 // src/components/BreadcrumbHero.tsx
-'use client';
-
 import Link from 'next/link';
 
 type Props = {

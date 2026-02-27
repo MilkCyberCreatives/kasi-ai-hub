@@ -1,7 +1,6 @@
 // src/components/ProgramsTeaser.tsx
-'use client';
-
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function ProgramsTeaser() {
   return (
@@ -24,7 +23,14 @@ export default function ProgramsTeaser() {
 
       <div className="mt-8 grid gap-6 md:grid-cols-3">
         <article className="glass rounded-2xl overflow-hidden">
-          <img src="/images/programs/foundations.jpg" alt="AI Foundations" className="h-40 w-full object-cover" />
+          <Image
+            src="/images/programs/foundations.jpg"
+            alt="AI Foundations"
+            width={800}
+            height={320}
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="h-40 w-full object-cover"
+          />
           <div className="p-6">
             <h3 className="text-white font-semibold text-lg">AI Foundations (3 Hours)</h3>
             <p className="mt-2 text-white/80">Prompts, tools, and a working workflow you can use the same day.</p>
@@ -36,7 +42,14 @@ export default function ProgramsTeaser() {
         </article>
 
         <article className="glass rounded-2xl overflow-hidden">
-          <img src="/images/programs/team.jpg" alt="Team Workshop" className="h-40 w-full object-cover" />
+          <Image
+            src="/images/programs/team.jpg"
+            alt="Team Workshop"
+            width={800}
+            height={320}
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="h-40 w-full object-cover"
+          />
           <div className="p-6">
             <h3 className="text-white font-semibold text-lg">Team Workshop (1 Day)</h3>
             <p className="mt-2 text-white/80">On-site or remote workshop tailored to your industry & tools.</p>
@@ -48,7 +61,14 @@ export default function ProgramsTeaser() {
         </article>
 
         <article className="glass rounded-2xl overflow-hidden">
-          <img src="/images/programs/clinic.jpg" alt="Monthly AI Clinic" className="h-40 w-full object-cover" />
+          <Image
+            src="/images/programs/clinic.jpg"
+            alt="Monthly AI Clinic"
+            width={800}
+            height={320}
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="h-40 w-full object-cover"
+          />
           <div className="p-6">
             <h3 className="text-white font-semibold text-lg">Monthly AI Clinic</h3>
             <p className="mt-2 text-white/80">Bring your challenge. We’ll solve it live and give you a template.</p>

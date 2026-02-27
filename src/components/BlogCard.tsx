@@ -1,7 +1,6 @@
 // src/components/BlogCard.tsx
-'use client';
-
 import Link from 'next/link';
+import Image from 'next/image';
 
 export type BlogPost = {
   slug: string;
@@ -18,7 +17,14 @@ export default function BlogCard({ post }: { post: BlogPost }) {
   return (
     <article className="glass rounded-2xl overflow-hidden flex flex-col">
       {post.cover ? (
-        <img src={post.cover} alt={post.title} className="h-44 w-full object-cover" />
+        <Image
+          src={post.cover}
+          alt={post.title}
+          width={960}
+          height={352}
+          sizes="(max-width: 768px) 100vw, 33vw"
+          className="h-44 w-full object-cover"
+        />
       ) : (
         <div className="h-44 w-full bg-white/5" />
       )}

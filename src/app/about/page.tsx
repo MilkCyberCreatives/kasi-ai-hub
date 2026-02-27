@@ -2,6 +2,7 @@
 import Script from 'next/script'
 import BreadcrumbHero from '@/components/BreadcrumbHero'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export const metadata = {
   title: 'About',
@@ -105,7 +106,14 @@ export default function AboutPage() {
             ].map((t) => (
               <article key={t.name} className="glass rounded-2xl p-5 text-center">
                 <div className="mx-auto h-20 w-20 overflow-hidden rounded-full bg-white/5">
-                  <img src={t.img} alt={t.name} className="h-full w-full object-cover" />
+                  <Image
+                    src={t.img}
+                    alt={t.name}
+                    width={80}
+                    height={80}
+                    sizes="80px"
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <div className="mt-3 text-white/90 font-semibold">{t.name}</div>
                 <div className="text-white/70 text-sm">{t.role}</div>

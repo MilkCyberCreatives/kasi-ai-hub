@@ -1,7 +1,6 @@
 // src/components/ServicesGrid.tsx
-'use client';
-
 import Link from 'next/link';
+import Image from 'next/image';
 
 const SERVICES = [
   {
@@ -59,7 +58,14 @@ export default function ServicesGrid() {
         {SERVICES.map((s) => (
           <article key={s.title} className="glass rounded-2xl overflow-hidden flex flex-col">
             <div className="h-36 w-full bg-black/30">
-              <img src={s.img} alt={s.title} className="h-full w-full object-cover opacity-90" />
+              <Image
+                src={s.img}
+                alt={s.title}
+                width={640}
+                height={288}
+                sizes="(max-width: 1024px) 50vw, 25vw"
+                className="h-full w-full object-cover opacity-90"
+              />
             </div>
             <div className="p-5 flex-1 flex flex-col">
               <h3 className="text-white font-semibold">{s.title}</h3>
