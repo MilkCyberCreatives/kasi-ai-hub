@@ -131,8 +131,8 @@ type ChatMessage = {
 function getApiConfig() {
   const apiKey = process.env.OPENAI_API_KEY || process.env.AI_API_KEY || '';
   const baseUrl = (process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '');
-  const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
-  return { apiKey, baseUrl, model };
+  const preferredModel = process.env.OPENAI_MODEL || '';
+  return { apiKey, baseUrl, preferredModel };
 }
 
 function extractJson(text: string): Record<string, unknown> | null {
@@ -154,43 +154,53 @@ function extractJson(text: string): Record<string, unknown> | null {
 }
 
 async function callLlmJson(messages: ChatMessage[]): Promise<Record<string, unknown> | null> {
-  const { apiKey, baseUrl, model } = getApiConfig();
+  const { apiKey, baseUrl, preferredModel } = getApiConfig();
   if (!apiKey) return null;
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12000);
+  const modelCandidates = preferredModel
+    ? [preferredModel]
+    : ['gpt-4.1-mini', 'gpt-4o-mini', 'gpt-4.1-nano'];
 
-  try {
-    const res = await fetch(`${baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0.2,
-        max_tokens: 700,
-        messages,
-      }),
-      signal: controller.signal,
-    });
+  for (const model of modelCandidates) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
 
-    if (!res.ok) return null;
+    try {
+      const res = await fetch(`${baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model,
+          temperature: 0.2,
+          max_tokens: 700,
+          response_format: { type: 'json_object' },
+          messages,
+        }),
+        signal: controller.signal,
+      });
 
-    const body = (await res.json()) as {
-      choices?: Array<{ message?: { content?: string } }>;
-    };
+      if (!res.ok) continue;
 
-    const content = body.choices?.[0]?.message?.content;
-    if (!content) return null;
+      const body = (await res.json()) as {
+        choices?: Array<{ message?: { content?: string } }>;
+      };
 
-    return extractJson(content);
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(timeout);
+      const content = body.choices?.[0]?.message?.content;
+      if (!content) continue;
+
+      const parsed = extractJson(content);
+      if (parsed) return parsed;
+    } catch {
+      // Try next model.
+    } finally {
+      clearTimeout(timeout);
+    }
   }
+
+  return null;
 }
 
 function keywordExists(source: string, values: string[]) {
