@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import ModuleHeader from '@/components/platform/ModuleHeader';
+import { EXTERNAL_LINKS } from '@/lib/external-links';
 
-const WHATSAPP = process.env.NEXT_PUBLIC_COMMUNITY_WHATSAPP_URL || '#';
-const SLACK = process.env.NEXT_PUBLIC_COMMUNITY_SLACK_URL || '#';
+const WHATSAPP = EXTERNAL_LINKS.whatsapp;
+const SLACK = EXTERNAL_LINKS.slack;
 
 const ROOMS = [
   { id: 'launch', title: 'Launch Room', detail: 'Plan and ship your first automation this week.' },

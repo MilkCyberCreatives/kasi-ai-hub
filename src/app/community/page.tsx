@@ -3,9 +3,10 @@
 
 import { useState } from 'react';
 import BreadcrumbHero from '@/components/BreadcrumbHero';
+import { EXTERNAL_LINKS } from '@/lib/external-links';
 
-const WHATSAPP = process.env.NEXT_PUBLIC_COMMUNITY_WHATSAPP_URL || '#';
-const SLACK = process.env.NEXT_PUBLIC_COMMUNITY_SLACK_URL || '#';
+const WHATSAPP = EXTERNAL_LINKS.whatsapp;
+const SLACK = EXTERNAL_LINKS.slack;
 
 type SubscribeResponse = {
   ok?: boolean;
@@ -81,4 +82,3 @@ export default function CommunityPage() {
     </main>
   );
 }
-

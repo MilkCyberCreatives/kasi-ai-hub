@@ -57,8 +57,8 @@ export default function BookPage() {
       <section className="mx-auto max-w-3xl px-4 py-10">
         <form onSubmit={onSubmit} className="grid gap-4">
           <div className="grid md:grid-cols-2 gap-4">
-            <input name="name" placeholder="Your name" className="bg-white/10 rounded px-3 py-2" />
-            <input name="email" type="email" placeholder="Email" className="bg-white/10 rounded px-3 py-2" />
+            <input required name="name" placeholder="Your name" className="bg-white/10 rounded px-3 py-2" />
+            <input required name="email" type="email" placeholder="Email" className="bg-white/10 rounded px-3 py-2" />
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             <input name="whatsapp" placeholder="WhatsApp (incl. country code)" className="bg-white/10 rounded px-3 py-2" />
@@ -68,7 +68,13 @@ export default function BookPage() {
             <input name="role" placeholder="Your role" className="bg-white/10 rounded px-3 py-2" />
             <input name="industry" placeholder="Industry" className="bg-white/10 rounded px-3 py-2" />
           </div>
-          <textarea name="goals" rows={3} placeholder="What do you want to achieve with AI?" className="bg-white/10 rounded px-3 py-2" />
+          <textarea
+            required
+            name="goals"
+            rows={3}
+            placeholder="What do you want to achieve with AI?"
+            className="bg-white/10 rounded px-3 py-2"
+          />
           <div className="grid md:grid-cols-3 gap-4">
             <select name="skillLevel" className="bg-white/10 rounded px-3 py-2">
               <option>Beginner</option>

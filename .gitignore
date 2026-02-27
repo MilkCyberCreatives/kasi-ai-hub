@@ -41,3 +41,7 @@ next-env.d.ts
 public/robots.txt
 public/sitemap.xml
 public/sitemap-*.xml
+
+# local scratch screenshots / diagnostics
+tmp-*.png
+tmp-*.html

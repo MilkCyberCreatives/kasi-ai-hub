@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAiSearchAnswer } from '@/lib/ai-automation';
+import { captureApiError } from '@/lib/observability';
+import { cleanText, enforceRateLimit, getClientIp, rateLimitErrorResponse } from '@/lib/request-security';
 
 export const runtime = 'nodejs';
 
@@ -69,29 +71,52 @@ function buildPrompts(input: CopilotRequest) {
 }
 
 export async function POST(req: Request) {
-  const body = (await req.json().catch(() => ({}))) as CopilotRequest;
-  const objective = String(body.objective || '').trim();
-
-  if (!objective) {
-    return NextResponse.json(
-      { ok: false, error: 'Objective is required.' },
-      { status: 400, headers: { 'Cache-Control': 'no-store' } }
-    );
+  const limit = enforceRateLimit(req, { key: 'platform_copilot', maxRequests: 30, windowMs: 60_000 });
+  if (!limit.allowed) {
+    return rateLimitErrorResponse(limit, 'Too many copilot requests. Please wait before retrying.');
   }
 
-  const search = await getAiSearchAnswer(objective);
-  const actions = createActionPlan(body);
-  const prompts = buildPrompts(body);
+  try {
+    const body = (await req.json().catch(() => ({}))) as CopilotRequest;
+    const objective = cleanText(body.objective, 600);
+    const industry = cleanText(body.industry, 120);
+    const currentTools = cleanText(body.currentTools, 220);
+    const urgency = cleanText(body.urgency, 80);
 
-  return NextResponse.json(
-    {
-      ok: true,
-      summary: search.answer,
-      actions,
-      prompts,
-      resources: search.results,
-      automatedBy: search.automatedBy,
-    },
-    { headers: { 'Cache-Control': 'no-store' } }
-  );
+    if (!objective || objective.length < 8) {
+      return NextResponse.json(
+        { ok: false, error: 'Objective is required and should be at least 8 characters.' },
+        { status: 400, headers: { 'Cache-Control': 'no-store' } }
+      );
+    }
+
+    const normalizedBody: CopilotRequest = {
+      objective,
+      industry,
+      currentTools,
+      urgency,
+    };
+
+    const search = await getAiSearchAnswer(objective);
+    const actions = createActionPlan(normalizedBody);
+    const prompts = buildPrompts(normalizedBody);
+
+    return NextResponse.json(
+      {
+        ok: true,
+        summary: search.answer,
+        actions,
+        prompts,
+        resources: search.results,
+        automatedBy: search.automatedBy,
+      },
+      { headers: { 'Cache-Control': 'no-store' } }
+    );
+  } catch (error) {
+    await captureApiError('/api/platform/copilot', error, { ip: getClientIp(req) });
+    return NextResponse.json(
+      { ok: false, error: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500, headers: { 'Cache-Control': 'no-store' } }
+    );
+  }
 }

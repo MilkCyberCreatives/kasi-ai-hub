@@ -180,7 +180,13 @@ function QuestionnaireForm() {
 
         <div>
           <label className="block text-sm text-white/70 mb-1">Goals with AI</label>
-          <textarea name="goals" placeholder="What outcomes do you want?" className="bg-white/10 rounded px-3 py-2 w-full" rows={3} />
+          <textarea
+            required
+            name="goals"
+            placeholder="What outcomes do you want?"
+            className="bg-white/10 rounded px-3 py-2 w-full"
+            rows={3}
+          />
         </div>
 
         <div>

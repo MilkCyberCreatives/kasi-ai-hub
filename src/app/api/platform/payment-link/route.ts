@@ -1,4 +1,13 @@
 import { NextResponse } from 'next/server';
+import { captureApiError } from '@/lib/observability';
+import {
+  cleanText,
+  enforceRateLimit,
+  getClientIp,
+  isValidEmail,
+  rateLimitErrorResponse,
+} from '@/lib/request-security';
+import { getPaymentCheckoutUrl } from '@/lib/external-links';
 
 export const runtime = 'nodejs';
 
@@ -15,23 +24,47 @@ function buildReference() {
 }
 
 export async function POST(req: Request) {
-  const body = (await req.json().catch(() => ({}))) as PaymentLinkRequest;
-  const baseCheckout = process.env.PAYMENT_CHECKOUT_URL || '';
-  const reference = buildReference();
-  const amount = String(body.amount || '1299');
+  const limit = enforceRateLimit(req, { key: 'platform_payment_link', maxRequests: 40, windowMs: 60_000 });
+  if (!limit.allowed) {
+    return rateLimitErrorResponse(limit, 'Too many payment link requests. Please retry shortly.');
+  }
 
-  const paymentUrl = baseCheckout
-    ? `${baseCheckout}${baseCheckout.includes('?') ? '&' : '?'}reference=${reference}&amount=${encodeURIComponent(amount)}`
-    : `/book?reference=${reference}`;
+  try {
+    const body = (await req.json().catch(() => ({}))) as PaymentLinkRequest;
+    const packageName = cleanText(body.packageName, 80) || 'AI Foundations';
+    const email = cleanText(body.email, 180).toLowerCase();
+    const amountText = cleanText(body.amount, 20) || '1299';
 
-  return NextResponse.json(
-    {
-      ok: true,
-      reference,
-      paymentUrl,
-      packageName: body.packageName || 'AI Foundations',
-      email: body.email || '',
-    },
-    { headers: { 'Cache-Control': 'no-store' } }
-  );
+    if (email && !isValidEmail(email)) {
+      return NextResponse.json({ ok: false, error: 'Invalid email format.' }, { status: 400 });
+    }
+
+    const numericAmount = Number(amountText);
+    if (!Number.isFinite(numericAmount) && amountText !== 'custom') {
+      return NextResponse.json({ ok: false, error: 'Amount must be numeric or "custom".' }, { status: 400 });
+    }
+
+    const reference = buildReference();
+    const baseCheckout = getPaymentCheckoutUrl();
+    const paymentUrl = baseCheckout
+      ? `${baseCheckout}${baseCheckout.includes('?') ? '&' : '?'}reference=${reference}&amount=${encodeURIComponent(amountText)}`
+      : `/book?reference=${reference}`;
+
+    return NextResponse.json(
+      {
+        ok: true,
+        reference,
+        paymentUrl,
+        packageName,
+        email,
+      },
+      { headers: { 'Cache-Control': 'no-store' } }
+    );
+  } catch (error) {
+    await captureApiError('/api/platform/payment-link', error, { ip: getClientIp(req) });
+    return NextResponse.json(
+      { ok: false, error: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500, headers: { 'Cache-Control': 'no-store' } }
+    );
+  }
 }

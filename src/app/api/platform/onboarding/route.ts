@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getProgramRecommendation } from '@/lib/ai-automation';
+import { captureApiError } from '@/lib/observability';
+import { cleanText, enforceRateLimit, getClientIp, rateLimitErrorResponse } from '@/lib/request-security';
 
 export const runtime = 'nodejs';
 
@@ -46,23 +48,57 @@ function buildFirstActions(input: OnboardingRequest) {
 }
 
 export async function POST(req: Request) {
-  const body = (await req.json().catch(() => ({}))) as OnboardingRequest;
+  const limit = enforceRateLimit(req, { key: 'platform_onboarding', maxRequests: 40, windowMs: 60_000 });
+  if (!limit.allowed) {
+    return rateLimitErrorResponse(limit, 'Too many onboarding requests. Please try again in a minute.');
+  }
 
-  const recommendation = await getProgramRecommendation({
-    role: body.role,
-    goal: normalizeGoal(body.primaryGoal || ''),
-    time: normalizeTimeline(body.timeline || ''),
-    budget: (body.budget || '').toLowerCase(),
-  });
+  try {
+    const body = (await req.json().catch(() => ({}))) as OnboardingRequest;
+    const role = cleanText(body.role, 80);
+    const primaryGoal = cleanText(body.primaryGoal, 120);
+    const timeline = cleanText(body.timeline, 80);
+    const budget = cleanText(body.budget, 80).toLowerCase();
+    const teamSizeRaw = cleanText(body.teamSize, 10);
+    const teamSize = Math.min(500, Math.max(1, Number(teamSizeRaw || '1')));
 
-  return NextResponse.json(
-    {
-      ok: true,
-      recommendation,
-      track: recommendation.path === '/community' ? 'community' : 'implementation',
-      firstActions: buildFirstActions(body),
-      automationLevel: body.teamSize && Number(body.teamSize) > 5 ? 'team-scale' : 'starter',
-    },
-    { headers: { 'Cache-Control': 'no-store' } }
-  );
+    if (!role) {
+      return NextResponse.json({ ok: false, error: 'Role is required.' }, { status: 400 });
+    }
+    if (!primaryGoal) {
+      return NextResponse.json({ ok: false, error: 'Primary goal is required.' }, { status: 400 });
+    }
+
+    const normalizedBody: OnboardingRequest = {
+      role,
+      primaryGoal,
+      timeline,
+      budget,
+      teamSize: String(Number.isFinite(teamSize) ? teamSize : 1),
+    };
+
+    const recommendation = await getProgramRecommendation({
+      role: normalizedBody.role,
+      goal: normalizeGoal(normalizedBody.primaryGoal || ''),
+      time: normalizeTimeline(normalizedBody.timeline || ''),
+      budget: normalizedBody.budget?.toLowerCase(),
+    });
+
+    return NextResponse.json(
+      {
+        ok: true,
+        recommendation,
+        track: recommendation.path === '/community' ? 'community' : 'implementation',
+        firstActions: buildFirstActions(normalizedBody),
+        automationLevel: teamSize > 5 ? 'team-scale' : 'starter',
+      },
+      { headers: { 'Cache-Control': 'no-store' } }
+    );
+  } catch (error) {
+    await captureApiError('/api/platform/onboarding', error, { ip: getClientIp(req) });
+    return NextResponse.json(
+      { ok: false, error: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500, headers: { 'Cache-Control': 'no-store' } }
+    );
+  }
 }

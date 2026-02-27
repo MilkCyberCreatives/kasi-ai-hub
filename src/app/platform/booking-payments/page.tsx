@@ -102,6 +102,7 @@ export default function BookingPaymentsPage() {
           <label className="mt-4 grid gap-2">
             <span className="text-sm text-white/80">Main goal</span>
             <textarea
+              required
               name="goals"
               rows={3}
               placeholder="What do you want this session to automate first?"
