@@ -10,6 +10,7 @@
   --brand-bg:#0a0f1a;
   --header-h:84px;  /* initial; pages (not home) reserve this much space */
   --ribbon-h:40px;
+  --hover-ease:cubic-bezier(.22,1,.36,1);
 }
 
 html,body{height:100%}
@@ -80,6 +81,40 @@ a{color:inherit;text-decoration:none}
   padding-top:0; padding-bottom:0;
   border-top:0;
   border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+a,button{
+  transition:
+    color .2s ease,
+    background-color .2s ease,
+    border-color .2s ease,
+    box-shadow .24s var(--hover-ease),
+    transform .24s var(--hover-ease),
+    opacity .2s ease;
+}
+
+@media (hover: hover) and (pointer: fine){
+  :is(button:not(:disabled), a.inline-flex, a.glass, a[class*="rounded"]){
+    transform:translateY(0);
+  }
+
+  :is(button:not(:disabled), a.inline-flex, a.glass, a[class*="rounded"]):hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 28px rgba(0,0,0,.28);
+  }
+
+  :is(button:not(:disabled), a.inline-flex, a.glass, a[class*="rounded"]):active{
+    transform:translateY(0) scale(.99);
+    box-shadow:0 6px 16px rgba(0,0,0,.22);
+  }
+
+  a.glass:hover{
+    border-color:rgba(67,215,135,.42);
+  }
+
+  :is(button, a)[style*="--brand-primary"]:hover{
+    box-shadow:0 14px 30px rgba(67,215,135,.28);
+  }
 }
 
 .testimonials-track{
